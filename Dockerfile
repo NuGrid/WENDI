@@ -37,5 +37,6 @@ RUN  chmod +x /home/nugrid/run-ipython-notebook.bash && \
 USER nugrid
 ENV HOME /home/nugrid
 RUN ipython profile create nbserver
+ADD startup.ipy /home/nugrid/.ipython/profile_nbserver/startup/startup.ipy
 WORKDIR /home/nugrid
 CMD /home/nugrid/run-ipython-notebook.bash

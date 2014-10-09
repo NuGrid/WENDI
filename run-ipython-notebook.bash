@@ -8,6 +8,7 @@ IPN_DIR="${IPN_LOCAL}/notebooks"
 
 ipython notebook \
     --profile=nbserver \
+    --pylab=inline \
     --no-browser \
     --ip=0.0.0.0 \
     --port=8080 \
