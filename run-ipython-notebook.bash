@@ -1,4 +1,5 @@
 #!/bin/bash                                                                     
+export PYTHONPATH=/home/nugrid
 
 IPN_URL="https://github.com/swjones/nugridnotebooks.git"
 IPN_LOCAL="/home/nugrid/nugridnotebooks"
