@@ -11,7 +11,8 @@ RUN apt-get update && \
     ipython-notebook python-pip \
     python-numpy python-scipy python-matplotlib python-pandas python-sympy \
     python-sklearn hdf5-tools libhdf5-serial-dev python-h5py python-tk \
-    build-essential python-dev libsndfile1-dev libsndfile1 git && \
+    build-essential python-dev libsndfile1-dev libsndfile1 git wget \
+    pandoc && \
   pip install scikits.audiolab && \
   apt-get remove --yes libsndfile-dev python-dev build-essential && \
   apt-get autoremove --yes && \
@@ -31,6 +32,7 @@ RUN dpkg-reconfigure locales
 EXPOSE 8080
 RUN useradd -d /home/nugrid -m -c "Nugrid Public User" nugrid
 ADD ./run-ipython-notebook.bash /home/nugrid/
+ADD ./nb_tools.py /home/nugrid/
 RUN  chmod +x /home/nugrid/run-ipython-notebook.bash && \ 
      mkdir -p /home/nugrid/CADC/NuGrid && \
      chown -R nugrid:nugrid /home/nugrid 

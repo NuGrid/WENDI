@@ -1,5 +1,6 @@
 import nugridse as mp
 import mesa as ms
+from nb_tools import *
 from JSAnimation import IPython_display
 
 mp.set_nugrid_path('/home/nugrid/CADC/NuGrid/data')
