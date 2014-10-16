@@ -1,9 +1,12 @@
 from IPython.display import FileLink, FileLinks
-import sys
+import os
 
-def grab_session(name):
+def grab_session(name,format='ipynb'):
     '''
-    Get a download link a notebook session.
+    Get a download link a notebook session in either .ipynb or static
+    rendered html format.
+    If .ipynb format, the file will have the additional extension
+    .nugrid, which one must remove before using again.
         
     Parameters
     ----------
@@ -16,8 +19,17 @@ def grab_session(name):
     grab_session('my_first_notebook')
     '''
     if '.ipynb' not in name: name += '.ipynb'
+    if format == 'ipynb':
+        # append .nugrid extension to avoid interpretation issues:
+        name2 = name+'.nugrid'
+        os.system('cp '+name+' '+name2)
+    else:
+        # render the notebook into static html using nbconvert
+        os.system('ipython nbconvert '+name)
+        name = name.replace('.ipynb','.html')
+    
     try:
-        FileLink('~/notebooks/'+name)
+        return FileLink(name2)
     except:
         print 'session '+name+' not available.'
 
@@ -46,6 +58,10 @@ def load_session(name,vos=False):
             os.system("wget "+name)
         except:
             print 'could not get '+name
+
+    if ".nugrid" in name:
+        newname = name.replace('.nugrid','')
+        os.rename(name,newname)
 
     else:
         print "vcp from user's VOSpace is not yet implemented"
