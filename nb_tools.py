@@ -25,8 +25,9 @@ def grab_session(name,format='ipynb'):
         os.system('cp '+name+' '+name2)
     else:
         # render the notebook into static html using nbconvert
+        print 'rendering html notebook...'
         os.system('ipython nbconvert '+name)
-        name = name.replace('.ipynb','.html')
+        name2 = name.replace('.ipynb','.html')
     
     try:
         return FileLink(name2)
