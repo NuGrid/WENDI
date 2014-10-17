@@ -32,7 +32,6 @@ RUN dpkg-reconfigure locales
 EXPOSE 8080
 RUN useradd -d /home/nugrid -m -c "Nugrid Public User" nugrid
 ADD ./run-ipython-notebook.bash /home/nugrid/
-ADD ./nb_tools.py /home/nugrid/
 RUN  chmod +x /home/nugrid/run-ipython-notebook.bash && \ 
      mkdir -p /home/nugrid/CADC/NuGrid && \
      chown -R nugrid:nugrid /home/nugrid 
@@ -40,5 +39,6 @@ USER nugrid
 ENV HOME /home/nugrid
 RUN ipython profile create nbserver
 ADD startup.ipy /home/nugrid/.ipython/profile_nbserver/startup/startup.ipy
+ADD nb_tools.py /home/nugrid/.ipython/profile_nbserver/startup/nb_tools.py
 WORKDIR /home/nugrid
 CMD /home/nugrid/run-ipython-notebook.bash
