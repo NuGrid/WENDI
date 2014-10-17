@@ -14,6 +14,7 @@ RUN apt-get update && \
     build-essential python-dev libsndfile1-dev libsndfile1 git wget \
     pandoc && \
   pip install scikits.audiolab && \
+  pip install pygments && \
   apt-get remove --yes libsndfile-dev python-dev build-essential && \
   apt-get autoremove --yes && \
   apt-get autoclean --yes && \
