@@ -59,13 +59,12 @@ def load_session(name,vos=False):
             os.system("wget "+name)
         except:
             print 'could not get '+name
-
-    if ".nugrid" in name:
-        newname = name.replace('.nugrid','')
-        os.rename(name,newname)
-
     else:
         print "vcp from user's VOSpace is not yet implemented"
+
+    if ".nugrid" in name:
+        os.rename(name.split('/')[-1],name.split('/')[-1].replace('.nugrid',''))
+
 
 def save_session(name):
     '''
@@ -73,7 +72,7 @@ def save_session(name):
     (only for authenticated users)
     '''
 
-    print "vcp from user's VOSpace is not yet implemented"
+    print "vcp to user's VOSpace is not yet implemented"
 
 
 
