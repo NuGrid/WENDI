@@ -21,6 +21,9 @@ RUN apt-get update && \
   pip install nugridpy vos && \
   pip install https://github.com/jakevdp/JSAnimation/archive/master.zip
 
+RUN  pip install ipython==2.0.0 jinja2 && \
+     pip install --upgrade tornado
+
 # set the lang to avoid issues
 RUN apt-get install -y language-pack-en
 ENV LANGUAGE en_US.UTF-8
