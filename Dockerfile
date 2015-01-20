@@ -45,4 +45,4 @@ RUN ipython profile create nbserver
 ADD startup.ipy /home/nugrid/.ipython/profile_nbserver/startup/startup.ipy
 ADD nb_tools.py /home/nugrid/.ipython/profile_nbserver/startup/nb_tools.py
 WORKDIR /home/nugrid
-CMD /home/nugrid/run-ipython-notebook.bash
+CMD timeout 604800 /home/nugrid/run-ipython-notebook.bash # 1 week timeout
