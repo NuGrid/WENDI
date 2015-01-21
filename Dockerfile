@@ -19,7 +19,8 @@ RUN apt-get update && \
   apt-get autoremove --yes && \
   apt-get autoclean --yes && \
   pip install nugridpy vos && \
-  pip install https://github.com/jakevdp/JSAnimation/archive/master.zip
+  pip install https://github.com/jakevdp/JSAnimation/archive/master.zip && \
+  pip install xlrd
 
 RUN  pip install ipython==2.0.0 jinja2 && \
      pip install --upgrade tornado
