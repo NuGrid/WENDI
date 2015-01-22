@@ -1,43 +1,65 @@
 from IPython.display import FileLink, FileLinks
 import os
 
-def grab_session(name,format='ipynb'):
+def get_user_and_token():
     '''
-    Get a download link a notebook session in either .ipynb or static
-    rendered html format.
-    If .ipynb format, the file will have the additional extension
-    .nugrid, which one must remove before using again.
+    Try to get authenticated user's CANFAR username
+    and token from the token file. If there is no
+    token file, then the user is ananymous.
+    '''
+
+    try:
+        token_file = '/home/nugrid/.token'
+    except:
+        return None, None
+
+    TOKEN = os.popen('cat '+token_file)
+    part = os.popen('echo " ' + TOKEN + ' " | cut -d"&" -f1')
+    canfaruser = os.popen('echo " ' + part + ' " | cut -d"=" -f2')
+
+    return canfaruser, TOKEN
+
+def list_sessions():
+    '''
+    List all sessions in the user's NuGrid VOSpace user directory
+    '''
+
+    canfaruser, TOKEN = get_user_and_token()
+    
+    if canfaruser is None:
+        print 'You must be authenticated to do that.'
+    else:
+        os.system('vls vos:nugrid/nb-users/'+canfaruser+\
+                  '/notebooks --token="'+TOKEN+'" ')
+
+def pull_session(name):
+    '''
+    Pull session into running container.
         
     Parameters
     ----------
     name : string
-        The name of the session that you want to grab.
+        The name of the session that you want to pull.
         
     Examples
     --------
     
-    grab_session('my_first_notebook')
+    pull_session('my_first_notebook')
     '''
     if '.ipynb' not in name: name += '.ipynb'
-    if format == 'ipynb':
-        # append .nugrid extension to avoid interpretation issues:
-        name2 = name+'.nugrid'
-        os.system('cp '+name+' '+name2)
-    else:
-        # render the notebook into static html using nbconvert
-        print 'rendering html notebook...'
-        os.system('ipython nbconvert '+name)
-        name2 = name.replace('.ipynb','.html')
-    
-    try:
-        return FileLink(name2)
-    except:
-        print 'session '+name+' not available.'
 
-def load_session(name,vos=False):
+    canfaruser, TOKEN = get_user_and_token()
+    if canfaruser is None:
+        print 'You must be authenticated to do that.'
+    else:
+        os.system('vcp vos:nugrid/nb-users/'+canfaruser+\
+            '/notebooks/'+name+' . --token="'+TOKEN+'" ')
+
+
+def save_session(name):
     '''
-    Load a notebook session from either VOspace (only for
-    authenticated users) or from a public GitHub repository.
+    Save a notebook session to your NuGrid VOspace user
+    directory (only for authenticated users).
         
     The notebook will appear in the notebook home directory.
         
@@ -48,31 +70,16 @@ def load_session(name,vos=False):
         the full URL of the .ipynb file in the GitHub repository
         or the name of the notebook as it appears in your VOSpace
         notebook directory.
-    vos : boolean, optional
-        Is the notebook session to be loaded from your VOSpace?
-        (For authenticated users only)
-        The default is False.
     '''
-
-    if not vos:
-        try:
-            os.system("wget "+name)
-        except:
-            print 'could not get '+name
+    if '.ipynb' not in name: name += '.ipynb'
+    
+    canfaruser, TOKEN = get_user_and_token()
+    if canfaruser is None:
+        print 'You must be authenticated to do that.'
     else:
-        print "vcp from user's VOSpace is not yet implemented"
+        os.system('vcp '+name+' vos:nugrid/nb-users/'+canfaruser+\
+            '/notebooks/'+name+' --token="'+TOKEN+'" ')
 
-    if ".nugrid" in name:
-        os.rename(name.split('/')[-1],name.split('/')[-1].replace('.nugrid',''))
-
-
-def save_session(name):
-    '''
-    Permanently save a notebook session in the user's VOSpace.
-    (only for authenticated users)
-    '''
-
-    print "vcp to user's VOSpace is not yet implemented"
 
 
 
