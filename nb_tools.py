@@ -1,5 +1,6 @@
 from IPython.display import FileLink, FileLinks
 import os
+import subprocess
 
 def get_user_and_token():
     '''
@@ -13,9 +14,9 @@ def get_user_and_token():
     except:
         return None, None
 
-    TOKEN = os.popen('cat '+token_file)
-    part = os.popen('echo " ' + TOKEN + ' " | cut -d"&" -f1')
-    canfaruser = os.popen('echo " ' + part + ' " | cut -d"=" -f2')
+    TOKEN = os.subprocess.check_output('cat '+token_file)
+    part = os.subprocess.check_output('echo " ' + TOKEN + ' " | cut -d"&" -f1')
+    canfaruser = os.subprocess.check_output('echo " ' + part + ' " | cut -d"=" -f2')
 
     return canfaruser, TOKEN
 
