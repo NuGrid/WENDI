@@ -38,7 +38,8 @@ def list_sessions():
         command = 'vls vos:nugrid/nb-users/'+canfaruser+\
             '/notebooks --token="'+TOKEN+'" '
 #        print command
-        os.system(command)
+        out = subprocess.check_output(command)
+        print out
 
 def pull_session(name):
     '''
