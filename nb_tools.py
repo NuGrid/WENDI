@@ -10,7 +10,7 @@ def get_user_and_token():
     '''
 
     try:
-        token_file = '/home/nugrid/.token'
+        token_file = './token'
     except:
         return None, None
 
@@ -21,7 +21,7 @@ def get_user_and_token():
     TOKEN = os.popen('cat '+token_file).read().replace('\n','')
     part = os.popen('echo " ' + TOKEN + ' " | cut -d"&" -f1').read().replace('\n','')
     canfaruser = os.popen('echo " ' + part + ' " | cut -d"=" -f2').read().replace('\n','')
-
+    canfaruser = canfaruser.strip()
 
     return canfaruser, TOKEN
 
@@ -35,8 +35,10 @@ def list_sessions():
     if canfaruser is None:
         print 'You must be authenticated to do that.'
     else:
-        os.system('vls vos:nugrid/nb-users/'+canfaruser+\
-                  '/notebooks --token="'+TOKEN+'" ')
+        command = 'vls vos:nugrid/nb-users/'+canfaruser+\
+            '/notebooks --token="'+TOKEN+'" '
+#        print command
+        os.system(command)
 
 def pull_session(name):
     '''
@@ -58,8 +60,10 @@ def pull_session(name):
     if canfaruser is None:
         print 'You must be authenticated to do that.'
     else:
-        os.system('vcp vos:nugrid/nb-users/'+canfaruser+\
-            '/notebooks/'+name+' . --token="'+TOKEN+'" ')
+        command = 'vcp vos:nugrid/nb-users/'+canfaruser+\
+            '/notebooks/'+name+' . --token="'+TOKEN+'" '
+#        print command
+        os.system(command)
 
 
 def save_session(name):
@@ -83,8 +87,10 @@ def save_session(name):
     if canfaruser is None:
         print 'You must be authenticated to do that.'
     else:
-        os.system('vcp '+name+' vos:nugrid/nb-users/'+canfaruser+\
-            '/notebooks/'+name+' --token="'+TOKEN+'" ')
+        command = 'vcp '+name+' vos:nugrid/nb-users/'+canfaruser+\
+            '/notebooks/'+name+' --token="'+TOKEN+'" '
+#        print command
+        os.system(command)
 
 
 
