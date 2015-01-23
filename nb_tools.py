@@ -14,9 +14,9 @@ def get_user_and_token():
     except:
         return None, None
 
-    TOKEN = os.subprocess.check_output('cat '+token_file)
-    part = os.subprocess.check_output('echo " ' + TOKEN + ' " | cut -d"&" -f1')
-    canfaruser = os.subprocess.check_output('echo " ' + part + ' " | cut -d"=" -f2')
+    TOKEN = subprocess.check_output('cat '+token_file)
+    part = subprocess.check_output('echo " ' + TOKEN + ' " | cut -d"&" -f1')
+    canfaruser = subprocess.check_output('echo " ' + part + ' " | cut -d"=" -f2')
 
     return canfaruser, TOKEN
 
