@@ -10,7 +10,7 @@ def get_user_and_token():
     '''
 
     try:
-        token_file = './token'
+        token_file = '/home/nugrid/.token'
     except:
         return None, None
 
