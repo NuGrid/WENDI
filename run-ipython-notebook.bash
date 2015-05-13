@@ -9,7 +9,7 @@ IPN_DIR="${IPN_LOCAL}/notebooks"
 
 ipython notebook \
     --profile=nbserver \
-    --pylab=inline \
+#    --pylab=inline \ # no longer required for ipython 3.1.0
     --no-browser \
     --ip=0.0.0.0 \
     --port=8888 \
