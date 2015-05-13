@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:13.10
 
 MAINTAINER Samuel Jones
 
@@ -18,7 +18,7 @@ RUN apt-get update && \
   apt-get remove --yes libsndfile-dev python-dev build-essential && \
   apt-get autoremove --yes && \
   apt-get autoclean --yes && \
-  pip install nugridpy vos && \
+  pip install --upgrade nugridpy vos && \
   pip install https://github.com/jakevdp/JSAnimation/archive/master.zip && \
   pip install xlrd
 
