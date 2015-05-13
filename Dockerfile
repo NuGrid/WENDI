@@ -22,7 +22,8 @@ RUN apt-get update && \
   pip install https://github.com/jakevdp/JSAnimation/archive/master.zip && \
   pip install xlrd
 
-RUN  pip install ipython==2.0.0 && \
+#RUN  pip install ipython==2.0.0 && \
+RUN  pip install ipython==3.1.0 && \
      pip install jinja2 && \
      pip install tornado && \
      pip install --upgrade tornado
