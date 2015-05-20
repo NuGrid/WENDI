@@ -1,12 +1,11 @@
-import os
 import nugridse as mp
 import mesa as ms
 from nb_tools import *
 from JSAnimation import IPython_display
 from NuGrid_Mesa_Explorer import start_explorer
 from SYGMA import start_SYGMA
+from OMEGA import start_OMEGA
 
-os.environ["SYGMADIR"] = "/home/nugrid/omega_sygma/"
 mp.set_nugrid_path('/home/nugrid/CADC/NuGrid')
 ms.set_nugrid_path('/home/nugrid/CADC/NuGrid')
 
