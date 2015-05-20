@@ -14,6 +14,14 @@ OMEGA_SYGMA_DIR="/home/nugrid/omega_sygma"
 
 # add Luke's widget module to python path:
 export PYTHONPATH=${IPN_LOCAL}/modules:${OMEGA_SYGMA_DIR}:$PYTHONPATH
+export SYGMADIR=${OMEGA_SYGMA_DIR}
+
+#trus the widget notebooks
+ipython trust \
+    --profile=nbserver \
+    ${IPN_DIR}/NuGrid_Mesa_Explorer.ipynb \
+    ${IPN_DIR}/SYGMA.ipynb \
+    ${IPN_DIR}/OMEGA.ipynb \
 
 ipython notebook \
     --profile=nbserver \
