@@ -1,12 +1,12 @@
 #!/bin/bash                                                                     
 export PYTHONPATH=/home/nugrid
 
-#IPN_URL="https://github.com/swjones/nugridnotebooks.git"
-IPN_URL="https://github.com/fherwig/nugridnotebooks.git"
+IPN_URL="https://github.com/swjones/nugridnotebooks.git"
+#IPN_URL="https://github.com/fherwig/nugridnotebooks.git"
 IPN_LOCAL="/home/nugrid/nugridnotebooks"
 IPN_DIR="${IPN_LOCAL}/notebooks"
 
-OMEGA_SYGMA_URL="https://bitbucket.com/critter1/omega_sygma.git"
+OMEGA_SYGMA_URL="https://nupycee@bitbucket.org/nupycee/nupycee.bitbucket.org.git"
 OMEGA_SYGMA_DIR="/home/nugrid/omega_sygma"
 
 [[ -d ${IPN_DIR} ]] || git clone --depth 1 ${IPN_URL} ${IPN_LOCAL}
