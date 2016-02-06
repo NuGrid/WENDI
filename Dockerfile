@@ -12,15 +12,17 @@ RUN apt-get update && \
     python-numpy python-scipy python-matplotlib python-pandas python-sympy \
     python-sklearn hdf5-tools libhdf5-serial-dev python-h5py python-tk \
     build-essential python-dev libsndfile1-dev libsndfile1 git wget \
-    pandoc && \
-  pip install scikits.audiolab && \
-  pip install pygments && \
-  apt-get remove --yes libsndfile-dev python-dev build-essential && \
-  apt-get autoremove --yes && \
-  apt-get autoclean --yes && \
-  pip install --upgrade nugridpy vos && \
-  pip install https://github.com/jakevdp/JSAnimation/archive/master.zip && \
-  pip install xlrd
+    pandoc
+RUN apt-get --no-install-recommends install --yes libfreetype6-dev libpng3 
+RUN pip install --upgrade matplotlib && \
+    pip install scikits.audiolab && \
+    pip install pygments && \
+    apt-get remove --yes libsndfile-dev python-dev build-essential && \
+    apt-get autoremove --yes && \
+    apt-get autoclean --yes && \
+    pip install --upgrade nugridpy vos && \
+    pip install https://github.com/jakevdp/JSAnimation/archive/master.zip && \
+    pip install xlrd
 
 #RUN  pip install ipython==2.0.0 && \
 RUN  pip install ipython==3.1.0 && \
