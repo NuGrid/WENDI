@@ -1,4 +1,4 @@
-FROM ubuntu:13.10
+FROM ubuntu:latest
 
 MAINTAINER Samuel Jones
 
@@ -24,6 +24,7 @@ RUN apt-get update && \
 
 #RUN  pip install ipython==2.0.0 && \
 RUN  pip install ipython==3.1.0 && \
+     pip install jsonschema && \
      pip install jinja2 && \
      pip install tornado && \
      pip install --upgrade tornado
