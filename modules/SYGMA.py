@@ -35,7 +35,7 @@ def start_SYGMA():
     custom_imf_dir = os.environ["SYGMADIR"] + "/SYGMA_widget_imfs/"
     default_custom_imf_text = "\n#File to define a custom IMF\n#Define your IMF in custom_imf\n#so that the return value represents\n#the chosen IMF value for the input mass\n\ndef custom_imf(mass):\n    #Salpeter IMF\n    return mass**-2.35\n"
     
-    states_plot = ["plot_totmasses", "plot_mass", "plot_spectro", "plot_mass_range"]
+    states_plot = ["plot_totmasses", "plot_mass", "plot_spectro", "plot_mass_range", "plot_stellar_param"]
     states_sim_plot = ["run_sim"] + states_plot
     states_cimf = ["custom_imf", "load_custom_imf"]
     states = states_sim_plot + states_cimf
@@ -181,6 +181,7 @@ def start_SYGMA():
     
     frame.add_display_object("source_over_plotting_group")
     frame.add_io_object("source")
+    frame.add_io_object("stellar_parameter")
     frame.add_io_object("over_plotting")
     frame.add_io_object("clear_plot")
     
@@ -194,7 +195,7 @@ def start_SYGMA():
     
     frame.set_state_children("widget", ["plot_page"], titles=["Plotting"])
     frame.set_state_children("plot_page", ["warning_msg", "plot_type", "plot_name", "source_over_plotting_group", "species_group", "elem_numer", "elem_denom", "plot"])
-    frame.set_state_children("source_over_plotting_group", ["source", "over_plotting", "clear_plot"])
+    frame.set_state_children("source_over_plotting_group", ["source", "stellar_parameter", "over_plotting", "clear_plot"])
     frame.set_state_children("species_group", ["iso_or_elem", "species"])
     
     
@@ -273,7 +274,7 @@ def start_SYGMA():
     frame.set_state_attribute("sim_responce", value="<p>Simulation data loaded.</p>", **group_style)
     frame.set_state_attribute("sim_responce", states_sim_plot, visible=True)
     
-    frame.set_state_attribute('plot_type', states_sim_plot, visible=True, description="Plot type: ", options=["Total mass", "Species mass", "Species spectroscopic", "Mass range contributions"])
+    frame.set_state_attribute('plot_type', states_sim_plot, visible=True, description="Plot type: ", options=["Total mass", "Species mass", "Species spectroscopic", "Mass range contributions", "Stellar parameters"])
     
     def mass_gas_handler(name, value):
         frame.set_attributes("mass_gas", value=float_text(value))
@@ -337,10 +338,12 @@ def start_SYGMA():
         
         if iniZ==0.0:
             data=s.sygma(mgal=mgal, iniZ=iniZ, imf_type=imf_type, alphaimf=alphaimf, imf_bdys=[10.1, 100.0], imf_bdys_pop3=imf_bdys, sn1a_on=sn1a_on,
-                         sn1a_rate=sn1a_rate, dt=dt,tend=tend, table=yield_table)
+                         sn1a_rate=sn1a_rate, dt=dt,tend=tend, table=yield_table, stellar_param_table="yield_tables/isotope_yield_table_MESA_only_param.txt", stellar_param_on=True)
+#                         sn1a_rate=sn1a_rate, dt=dt,tend=tend, table=yield_table)
         else:
             data=s.sygma(mgal=mgal, iniZ=iniZ, imf_type=imf_type, alphaimf=alphaimf, imf_bdys=imf_bdys, sn1a_on=sn1a_on,
-                         sn1a_rate=sn1a_rate, dt=dt,tend=tend, table=yield_table)
+                         sn1a_rate=sn1a_rate, dt=dt,tend=tend, table=yield_table, stellar_param_table="yield_tables/isotope_yield_table_MESA_only_param.txt", stellar_param_on=True)
+#                         sn1a_rate=sn1a_rate, dt=dt,tend=tend, table=yield_table)
         frame.set_state("run_sim")
         ##force reset plottype
         frame.set_attributes("plot_type", selected_label="Species mass", value="Species mass")
@@ -432,9 +435,11 @@ def start_SYGMA():
     frame.set_state_attribute("plot_name", "plot_mass", visible=True, value="<h2>Plot: Species mass evolution</h2>")
     frame.set_state_attribute("plot_name", "plot_spectro", visible=True, value="<h2>Plot: Spectroscopic Mass evolution</h2>")
     frame.set_state_attribute("plot_name", "plot_mass_range", visible=True, value="<h2>Plot: Mass range contributions</h2><p>Only ejecta from AGB and massive stars are considered.</p>")
+    frame.set_state_attribute("plot_name", "plot_stellar_param", visible=True, value="<h2>Plot: Stellar parameters</h2>")
     
     frame.set_state_attribute("source_over_plotting_group", states_plot, visible=True, **group_style)
     frame.set_state_attribute("source", ["plot_totmasses", "plot_mass", "plot_spectro"], visible=True, description="Yield source: ", options=["All", "AGB", "SNe Ia", "Massive"], selected_label="All")
+    frame.set_state_attribute("stellar_parameter", "plot_stellar_param", visible=True, description="Stellar Parameters: ", options=["Wind kinetic energy", "Wind ejection", "11.18 - 13.6eV", "13.6 - 24.6eV", "24.6 - \u221EeV", "Ekin wind", "Mdot wind", "Total luminosity"], selected_label="Wind kinetic energy")
     frame.set_state_attribute("over_plotting", visible=True, description="Over plotting", value=False, **button_style)
     frame.set_state_attribute("clear_plot", description="Clear plot", **button_style)
     frame.set_state_links("clear_plot_link", [("over_plotting", "value"), ("clear_plot", "visible")], directional=True)
@@ -460,6 +465,8 @@ def start_SYGMA():
             frame.set_state("plot_spectro")
         elif value=="Mass range contributions":
             frame.set_state("plot_mass_range")
+        elif value=="Stellar parameters":
+            frame.set_state("plot_stellar_param")
         
 #        iniZ = float(frame.get_attribute("init_Z", "value"))
 #        if iniZ==0.0:
@@ -508,12 +515,16 @@ def start_SYGMA():
             
         over_plotting = frame.get_attribute("over_plotting", "value")
         source_map = {"All":"all", "AGB":"agb", "SNe Ia":"sn1a", "Massive":"massive"}
-        label_map = {"All":"", "AGB":", AGB", "SNe Ia":", SNIa", "Massive":", Massive"}
+        source_label_map = {"All":"", "AGB":", AGB", "SNe Ia":", SNIa", "Massive":", Massive"}
+        quantity_map = {"Wind kinetic energy":"Wind kinetic energy", "Wind ejection":"Wind ejection", "11.18 - 13.6eV":"[11.18, 13.6]", "13.6 - 24.6eV":"[13.6, 24.6]", "24.6 - \u221EeV":"[24.6, 0.0]", "Ekin wind":"Ekin_wind", "Mdot wind":"Mdot_wind", "Total luminosity":"L_tot"}
+        quantity_label_map = {"Wind kinetic energy":" Wind kinetic energy", "Wind ejection":" Wind ejection", "11.18 - 13.6eV":" 11.18 - 13.6eV", "13.6 - 24.6eV":" 13.6 - 24.6eV", "24.6 - \u221EeV":" 24.6 - $\\infty$eV", "Ekin wind":" Ekin wind", "Mdot wind":" Mdot wind", "Total luminosity":" $L_{tot}$"}
         tot_mass_labels = {"all":"All", "agb":"AGB", "sn1a":"SNIa", "massive":"Massive"}
         state = frame.get_state()
         runs = frame.get_state_data("runs")
         source = source_map[frame.get_attribute("source", "value")]
-        label_source = label_map[frame.get_attribute("source", "value")]
+        label_source = source_label_map[frame.get_attribute("source", "value")]
+        quantity = quantity_map[frame.get_attribute("stellar_parameter", "value")]
+        label_quantity = quantity_label_map[frame.get_attribute("stellar_parameter", "value")]
         species = frame.get_attribute("species", "value")
         
         no_runs = True
@@ -604,6 +615,26 @@ def start_SYGMA():
                         kwargs.update({"label":label})
                         kwargs.update(styles.get_style())
                         data.plot_mass_range_contributions(**kwargs)
+        elif state=="plot_stellar_param":
+            plot_data = frame.get_state_data("over_plotting_data")
+            
+            if not over_plotting:
+                plot_data = []
+            
+            over_plot = [("quantity", quantity), ("label", label_quantity)]
+            if not over_plot in plot_data:
+                plot_data.append(over_plot)
+                frame.set_state_data("over_plotting_data", plot_data)
+            
+            for data, name, Z, widget_name in runs:
+                if frame.get_attribute(widget_name, "value"):
+                    no_runs = False
+                    for item in plot_data:
+                        kwargs = dict(item)
+                        label = name + ": " + kwargs["label"]
+                        kwargs.update({"label":label})
+                        kwargs.update(styles.get_style())
+                        data.plot_stellar_param(**kwargs)
         if no_runs:
             print "No runs selected."                
 
@@ -620,6 +651,7 @@ def start_SYGMA():
     frame.set_object("plot_name", widgets.HTML())
     frame.set_object("source_over_plotting_group", widgets.HBox())
     frame.set_object("source", widgets.Dropdown())
+    frame.set_object("stellar_parameter", widgets.Dropdown())
     frame.set_object("over_plotting", widgets.ToggleButton())
     frame.set_object("clear_plot", widgets.Button())
     frame.set_object("species_group", widgets.VBox())
