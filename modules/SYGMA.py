@@ -628,15 +628,19 @@ def start_SYGMA():
             
             for data, name, Z, widget_name in runs:
                 if frame.get_attribute(widget_name, "value"):
-                    no_runs = False
-                    for item in plot_data:
-                        kwargs = dict(item)
-                        label = name + ": " + kwargs["label"]
-                        kwargs.update({"label":label})
-                        kwargs.update(styles.get_style())
-                        data.plot_stellar_param(**kwargs)
+                    if Z != 0.0:
+                        no_runs = False
+                        for item in plot_data:
+                            kwargs = dict(item)
+                            label = name + ": " + kwargs["label"]
+                            kwargs.update({"label":label})
+                            kwargs.update(styles.get_style())
+                            data.plot_stellar_param(**kwargs)
+                    else:
+                        print("Stellar parameter data for run: \'"+name+"\' with initial metallicity: "+str(Z)+" not plotted.")
+                        continue
         if no_runs:
-            print "No runs selected."                
+            print("No runs selected.")
 
     
     frame.set_state_callbacks("clear_plot", clear_plot_handler, attribute=None, type="on_click")
@@ -827,13 +831,17 @@ def start_SYGMA():
         
         for data, name, Z, widget_name in runs:
             if frame.get_attribute(widget_name, "value"):
-                file = "evol_tables/" + widget_name.replace("#", "") + "file"
+                file = "evol_tables/" + widget_name.replace("#", "") + "file.txt"
                 if data_type == "Elements":
                     data.write_evol_table(species, [], file, "./")
                 elif data_type == "Isotopes":
                     data.write_evol_table([], species, file, "./")
                 elif data_type == "Stellar parameters":
-                    data.write_stellar_param_table(file, "./")
+                    if Z != 0.0:
+                        data.write_stellar_param_table(file, "./")
+                    else:
+                        html = html + "<p>Stellar parameter table for run: \'"+name+"\' with initial metallicity: "+str(Z)+" not genrated.</p>"
+                        continue
                 html = html + "<p><a href=\"" + file + "\" target=\"_blank\" download>" + name + "</a></p>\n"
         
         if html == title:
