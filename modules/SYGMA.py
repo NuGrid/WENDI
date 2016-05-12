@@ -262,8 +262,8 @@ def start_SYGMA():
     frame.set_state_attribute('sn1a_group', visible=True, **group_style)
     frame.set_state_attribute('use_sn1a', visible=True, description="Include SNe Ia: ", value=True)
     frame.set_state_attribute("yield_table_group", visible=True, **group_style)
-    frame.set_state_attribute("yield_table_selection", visible=True, description="CCSN remnant prescription:", options=["Analytic perscription", "Ye=0.4982"], value="Ye=0.4982")
-    frame.set_state_attribute('yield_table_list', visible=True, options=yield_list["Ye=0.4982"], selected_label="Fallback at Ye")
+    frame.set_state_attribute("yield_table_selection", visible=True, description="CCSN remnant prescription:", options=["Analytic perscription", "Ye=0.4982"], value="Analytic perscription")
+    frame.set_state_attribute('yield_table_list', visible=True, options=yield_list["Analytic perscription"], selected_label="Delay")
     frame.set_state_links("sn1a_link", [("use_sn1a", "value"), ("sn1a_rates", "visible")], directional=True)
     
     frame.set_state_attribute('sn1a_rates', description="SNe Ia rates: ", options=['Power law', 'Exponential', 'Gaussian','Maoz12'])
@@ -637,7 +637,7 @@ def start_SYGMA():
                             kwargs.update(styles.get_style())
                             data.plot_stellar_param(**kwargs)
                     else:
-                        print("Stellar parameter data for run: \'"+name+"\' with initial metallicity: "+str(Z)+" not plotted.")
+                        print("Stellar parameter at zero metallicity not available.")
                         continue
         if no_runs:
             print("No runs selected.")
@@ -840,7 +840,7 @@ def start_SYGMA():
                     if Z != 0.0:
                         data.write_stellar_param_table(file, "./")
                     else:
-                        html = html + "<p>Stellar parameter table for run: \'"+name+"\' with initial metallicity: "+str(Z)+" not genrated.</p>"
+                        html = html + "<p>Stellar parameter at zero metallicity not available.</p>"
                         continue
                 html = html + "<p><a href=\"" + file + "\" target=\"_blank\" download>" + name + "</a></p>\n"
         
