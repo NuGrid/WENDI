@@ -27,6 +27,7 @@ def start_SYGMA():
                   "Exclude neutron-alpha rich freeze-out":"yield_tables/isotope_yield_table_MESA_only_fryer12_exclnalpha.txt"}, 
                   "Ye=0.4982":{"Fallback at Ye":"yield_tables/isotope_yield_table_MESA_only_ye.txt",
                   "Fallback motivated by GCE":"yield_tables/isotope_yield_table_MESA_only_ye_fallback.txt"}}
+    stellar_param_table = "yield_tables/isotope_yield_table_MESA_only_param.txt"
     group_style = {"border_style":"none", "border_radius":"0em"}
     text_box_style = {"width":"10em"}
     button_style = {"font_size":"1.25em", "font_weight":"bold"}
@@ -35,7 +36,7 @@ def start_SYGMA():
     custom_imf_dir = os.environ["SYGMADIR"] + "/SYGMA_widget_imfs/"
     default_custom_imf_text = "\n#File to define a custom IMF\n#Define your IMF in custom_imf\n#so that the return value represents\n#the chosen IMF value for the input mass\n\ndef custom_imf(mass):\n    #Salpeter IMF\n    return mass**-2.35\n"
     
-    states_plot = ["plot_totmasses", "plot_mass", "plot_spectro", "plot_mass_range"]
+    states_plot = ["plot_totmasses", "plot_mass", "plot_spectro", "plot_mass_range", "plot_stellar_param"]
     states_sim_plot = ["run_sim"] + states_plot
     states_cimf = ["custom_imf", "load_custom_imf"]
     states = states_sim_plot + states_cimf
@@ -181,6 +182,7 @@ def start_SYGMA():
     
     frame.add_display_object("source_over_plotting_group")
     frame.add_io_object("source")
+    frame.add_io_object("stellar_parameter")
     frame.add_io_object("over_plotting")
     frame.add_io_object("clear_plot")
     
@@ -194,7 +196,7 @@ def start_SYGMA():
     
     frame.set_state_children("widget", ["plot_page"], titles=["Plotting"])
     frame.set_state_children("plot_page", ["warning_msg", "plot_type", "plot_name", "source_over_plotting_group", "species_group", "elem_numer", "elem_denom", "plot"])
-    frame.set_state_children("source_over_plotting_group", ["source", "over_plotting", "clear_plot"])
+    frame.set_state_children("source_over_plotting_group", ["source", "stellar_parameter", "over_plotting", "clear_plot"])
     frame.set_state_children("species_group", ["iso_or_elem", "species"])
     
     
@@ -220,15 +222,16 @@ def start_SYGMA():
     ###plotting page###
     frame.add_display_object("get_table_page")
 
-    frame.add_display_object("species_mult_group")
+    frame.add_display_object("data_type_group")
+    frame.add_io_object("data_type")
     frame.add_io_object("species_mult")
     
     frame.add_io_object("get_table")
     frame.add_io_object("table_links")
     
     frame.set_state_children("widget", ["get_table_page"], titles=["Download Tables"])
-    frame.set_state_children("get_table_page", ["warning_msg",  "species_mult_group", "get_table", "table_links"])
-    frame.set_state_children("species_mult_group", ["iso_or_elem", "species_mult"])
+    frame.set_state_children("get_table_page", ["warning_msg",  "data_type_group", "get_table", "table_links"])
+    frame.set_state_children("data_type_group", ["data_type", "species_mult"])
         
             
     frame.set_state_attribute('window', visible=True, **group_style)
@@ -259,8 +262,8 @@ def start_SYGMA():
     frame.set_state_attribute('sn1a_group', visible=True, **group_style)
     frame.set_state_attribute('use_sn1a', visible=True, description="Include SNe Ia: ", value=True)
     frame.set_state_attribute("yield_table_group", visible=True, **group_style)
-    frame.set_state_attribute("yield_table_selection", visible=True, description="CCSN remnant prescription:", options=["Analytic perscription", "Ye=0.4982"], value="Ye=0.4982")
-    frame.set_state_attribute('yield_table_list', visible=True, options=yield_list["Ye=0.4982"], selected_label="Fallback at Ye")
+    frame.set_state_attribute("yield_table_selection", visible=True, description="CCSN remnant prescription:", options=["Analytic perscription", "Ye=0.4982"], value="Analytic perscription")
+    frame.set_state_attribute('yield_table_list', visible=True, options=yield_list["Analytic perscription"], selected_label="Delay")
     frame.set_state_links("sn1a_link", [("use_sn1a", "value"), ("sn1a_rates", "visible")], directional=True)
     
     frame.set_state_attribute('sn1a_rates', description="SNe Ia rates: ", options=['Power law', 'Exponential', 'Gaussian','Maoz12'])
@@ -273,7 +276,7 @@ def start_SYGMA():
     frame.set_state_attribute("sim_responce", value="<p>Simulation data loaded.</p>", **group_style)
     frame.set_state_attribute("sim_responce", states_sim_plot, visible=True)
     
-    frame.set_state_attribute('plot_type', states_sim_plot, visible=True, description="Plot type: ", options=["Total mass", "Species mass", "Species spectroscopic", "Mass range contributions"])
+    frame.set_state_attribute('plot_type', states_sim_plot, visible=True, description="Plot type: ", options=["Total mass", "Species mass", "Species spectroscopic", "Mass range contributions", "Stellar parameters"])
     
     def mass_gas_handler(name, value):
         frame.set_attributes("mass_gas", value=float_text(value))
@@ -337,10 +340,10 @@ def start_SYGMA():
         
         if iniZ==0.0:
             data=s.sygma(mgal=mgal, iniZ=iniZ, imf_type=imf_type, alphaimf=alphaimf, imf_bdys=[10.1, 100.0], imf_bdys_pop3=imf_bdys, sn1a_on=sn1a_on,
-                         sn1a_rate=sn1a_rate, dt=dt,tend=tend, table=yield_table)
+                         sn1a_rate=sn1a_rate, dt=dt,tend=tend, table=yield_table, stellar_param_table=stellar_param_table, stellar_param_on=True)
         else:
             data=s.sygma(mgal=mgal, iniZ=iniZ, imf_type=imf_type, alphaimf=alphaimf, imf_bdys=imf_bdys, sn1a_on=sn1a_on,
-                         sn1a_rate=sn1a_rate, dt=dt,tend=tend, table=yield_table)
+                         sn1a_rate=sn1a_rate, dt=dt,tend=tend, table=yield_table, stellar_param_table=stellar_param_table, stellar_param_on=True)
         frame.set_state("run_sim")
         ##force reset plottype
         frame.set_attributes("plot_type", selected_label="Species mass", value="Species mass")
@@ -432,9 +435,12 @@ def start_SYGMA():
     frame.set_state_attribute("plot_name", "plot_mass", visible=True, value="<h2>Plot: Species mass evolution</h2>")
     frame.set_state_attribute("plot_name", "plot_spectro", visible=True, value="<h2>Plot: Spectroscopic Mass evolution</h2>")
     frame.set_state_attribute("plot_name", "plot_mass_range", visible=True, value="<h2>Plot: Mass range contributions</h2><p>Only ejecta from AGB and massive stars are considered.</p>")
+    frame.set_state_attribute("plot_name", "plot_stellar_param", visible=True, value="<h2>Plot: Stellar parameters</h2>")
     
     frame.set_state_attribute("source_over_plotting_group", states_plot, visible=True, **group_style)
     frame.set_state_attribute("source", ["plot_totmasses", "plot_mass", "plot_spectro"], visible=True, description="Yield source: ", options=["All", "AGB", "SNe Ia", "Massive"], selected_label="All")
+    frame.set_state_attribute("stellar_parameter", visible=False, description="Stellar Parameters: ", options=["11.18 - 13.6eV", "13.6 - 24.6eV", "24.6 - \u221EeV", "Ekin wind", "Mdot wind", "Total luminosity"], selected_label="11.18 - 13.6eV")
+    frame.set_state_attribute("stellar_parameter", "plot_stellar_param", visible=True)
     frame.set_state_attribute("over_plotting", visible=True, description="Over plotting", value=False, **button_style)
     frame.set_state_attribute("clear_plot", description="Clear plot", **button_style)
     frame.set_state_links("clear_plot_link", [("over_plotting", "value"), ("clear_plot", "visible")], directional=True)
@@ -460,6 +466,8 @@ def start_SYGMA():
             frame.set_state("plot_spectro")
         elif value=="Mass range contributions":
             frame.set_state("plot_mass_range")
+        elif value=="Stellar parameters":
+            frame.set_state("plot_stellar_param")
         
 #        iniZ = float(frame.get_attribute("init_Z", "value"))
 #        if iniZ==0.0:
@@ -484,9 +492,10 @@ def start_SYGMA():
         frame.set_attributes("elem_numer", options=elements)
         frame.set_attributes("elem_denom", options=elements)
         
-        if frame.get_attribute("iso_or_elem", "value")=="Isotopes":
+        iso_or_elem = grame.get_attribute("iso_or_elem", "value")
+        if iso_or_elem=="Isotopes":
             frame.set_attributes("species", description="Isotope: ", options=isotopes)
-        elif frame.get_attribute("iso_or_elem", "value")=="Elements":
+        elif iso_or_elem=="Elements":
             frame.set_attributes("species", description="Element: ", options=elements)
     
     def sel_iso_or_elem(attribute, value):
@@ -494,10 +503,8 @@ def start_SYGMA():
         isotopes = frame.get_state_data("isotopes")
         if value=="Isotopes":
             frame.set_attributes("species", description="Isotope: ", options=isotopes)
-            frame.set_attributes("species_mult", description="Isotope: ", options=isotopes_sel_mult)
         elif value=="Elements":
             frame.set_attributes("species", description="Element: ", options=elements)
-            frame.set_attributes("species_mult", description="Element: ", options=elements_sel_mult)
         
     def run(widget):
         styles = frame.get_state_data("styles")
@@ -508,12 +515,16 @@ def start_SYGMA():
             
         over_plotting = frame.get_attribute("over_plotting", "value")
         source_map = {"All":"all", "AGB":"agb", "SNe Ia":"sn1a", "Massive":"massive"}
-        label_map = {"All":"", "AGB":", AGB", "SNe Ia":", SNIa", "Massive":", Massive"}
+        source_label_map = {"All":"", "AGB":", AGB", "SNe Ia":", SNIa", "Massive":", Massive"}
+        quantity_map = {"11.18 - 13.6eV":"[11.18, 13.6]", "13.6 - 24.6eV":"[13.6, 24.6]", "24.6 - \u221EeV":"[24.6, 0.0]", "Ekin wind":"Ekin_wind", "Mdot wind":"Mdot_wind", "Total luminosity":"L_tot"}
+        quantity_label_map = {"11.18 - 13.6eV":" 11.18 - 13.6eV", "13.6 - 24.6eV":" 13.6 - 24.6eV", "24.6 - \u221EeV":" 24.6 - $\\infty$eV", "Ekin wind":" Ekin wind", "Mdot wind":" Mdot wind", "Total luminosity":" $L_{tot}$"}
         tot_mass_labels = {"all":"All", "agb":"AGB", "sn1a":"SNIa", "massive":"Massive"}
         state = frame.get_state()
         runs = frame.get_state_data("runs")
         source = source_map[frame.get_attribute("source", "value")]
-        label_source = label_map[frame.get_attribute("source", "value")]
+        label_source = source_label_map[frame.get_attribute("source", "value")]
+        quantity = quantity_map[frame.get_attribute("stellar_parameter", "value")]
+        label_quantity = quantity_label_map[frame.get_attribute("stellar_parameter", "value")]
         species = frame.get_attribute("species", "value")
         
         no_runs = True
@@ -604,8 +615,32 @@ def start_SYGMA():
                         kwargs.update({"label":label})
                         kwargs.update(styles.get_style())
                         data.plot_mass_range_contributions(**kwargs)
+        elif state=="plot_stellar_param":
+            plot_data = frame.get_state_data("over_plotting_data")
+            
+            if not over_plotting:
+                plot_data = []
+            
+            over_plot = [("quantity", quantity), ("label", label_quantity)]
+            if not over_plot in plot_data:
+                plot_data.append(over_plot)
+                frame.set_state_data("over_plotting_data", plot_data)
+            
+            for data, name, Z, widget_name in runs:
+                if frame.get_attribute(widget_name, "value"):
+                    if Z != 0.0:
+                        no_runs = False
+                        for item in plot_data:
+                            kwargs = dict(item)
+                            label = name + ": " + kwargs["label"]
+                            kwargs.update({"label":label})
+                            kwargs.update(styles.get_style())
+                            data.plot_stellar_param(**kwargs)
+                    else:
+                        print("Stellar parameter at zero metallicity not available.")
+                        continue
         if no_runs:
-            print "No runs selected."                
+            print("No runs selected.")
 
     
     frame.set_state_callbacks("clear_plot", clear_plot_handler, attribute=None, type="on_click")
@@ -620,6 +655,7 @@ def start_SYGMA():
     frame.set_object("plot_name", widgets.HTML())
     frame.set_object("source_over_plotting_group", widgets.HBox())
     frame.set_object("source", widgets.Dropdown())
+    frame.set_object("stellar_parameter", widgets.Dropdown())
     frame.set_object("over_plotting", widgets.ToggleButton())
     frame.set_object("clear_plot", widgets.Button())
     frame.set_object("species_group", widgets.VBox())
@@ -754,25 +790,36 @@ def start_SYGMA():
     frame.set_state_attribute("warning_msg", visible=True, value="<h3>Error: No simulation data!</h3>", **group_style)
     frame.set_state_attribute("warning_msg", states_plot, visible=False)
     
-    frame.set_state_attribute("species_mult_group", states_sim_plot, visible=True, **group_style)
-    frame.set_state_attribute("iso_or_elem", visible=True, description="species type: ", options=["Elements", "Isotopes"], selected_label="Elements")
+    frame.set_state_attribute("data_type_group", states_sim_plot, visible=True, **group_style)
+    frame.set_state_attribute("data_type", visible=True, description="Data type: ", options=["Elements", "Isotopes", "Stellar parameters"], selected_label="Elements")
     frame.set_state_attribute("species_mult", visible=True, description="Element: ", options=elements_sel_mult, **text_box_style)
 
     frame.set_state_attribute("get_table", states_sim_plot, visible=True, description="Get table links", **button_style)
     frame.set_state_attribute("table_links", states_sim_plot, visible=True, value="", **group_style)
+
+    def sel_data_type(attribute, value):
+        elements = frame.get_state_data("elements")
+        isotopes = frame.get_state_data("isotopes")
+        if value=="Isotopes":
+            frame.set_attributes("species_mult", visible=True, description="Isotope: ", options=isotopes_sel_mult)
+        elif value=="Elements":
+            frame.set_attributes("species_mult", visible=True, description="Element: ", options=elements_sel_mult)
+        elif value=="Stellar parameters":
+            frame.set_attributes("table_links", value="")
+            frame.set_attributes("species_mult", visible=False)            
     
     def species_mult_handler(name, value):
         if "All" in value:
-            iso_or_elem = frame.get_attribute("iso_or_elem", "value")
-            if iso_or_elem == "Elements":
+            data_type = frame.get_attribute("data_type", "value")
+            if data_type == "Elements":
                 value = tuple(elements_all)
-            elif iso_or_elem == "Isotopes":
+            elif data_type == "Isotopes":
                 value = tuple(isotopes_all)
-            frame.set_attributes("species_mult", value=value, selected_labels=value)
+            frame.set_attributes("species_mult", visible=True, value=value, selected_labels=value)
         frame.set_attributes("table_links", value="")
     
     def get_table_handler(widget):
-        iso_or_elem = frame.get_attribute("iso_or_elem", "value")
+        data_type = frame.get_attribute("data_type", "value")
         species = list(frame.get_attribute("species_mult", "value"))
 
         runs = frame.get_state_data("runs")
@@ -785,24 +832,31 @@ def start_SYGMA():
         for data, name, Z, widget_name in runs:
             if frame.get_attribute(widget_name, "value"):
                 file = "evol_tables/" + widget_name.replace("#", "") + "file.txt"
-                if iso_or_elem == "Elements":
+                if data_type == "Elements":
                     data.write_evol_table(species, [], file, "./")
-                elif iso_or_elem == "Isotopes":
+                elif data_type == "Isotopes":
                     data.write_evol_table([], species, file, "./")
+                elif data_type == "Stellar parameters":
+                    if Z != 0.0:
+                        data.write_stellar_param_table(file, "./")
+                    else:
+                        html = html + "<p>Stellar parameter at zero metallicity not available.</p>"
+                        continue
                 html = html + "<p><a href=\"" + file + "\" target=\"_blank\" download>" + name + "</a></p>\n"
         
         if html == title:
-            html = ""
-            print("No runs selected.")
-        
+            html = "<p>No runs selected.</p>"
+
         frame.set_attributes("table_links", value=html)
         clear_output()
         pyplot.close("all")
         
+    frame.set_state_callbacks("data_type", sel_data_type)
     frame.set_state_callbacks("species_mult", species_mult_handler)
     frame.set_state_callbacks("get_table", get_table_handler, attribute=None, type="on_click")
 
-    frame.set_object("species_mult_group", widgets.VBox())
+    frame.set_object("data_type_group", widgets.VBox())
+    frame.set_object("data_type", widgets.RadioButtons())
     frame.set_object("species_mult", widgets.SelectMultiple())
     frame.set_object("get_table_page", widgets.VBox())
     frame.set_object("get_table", widgets.Button())
