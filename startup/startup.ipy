@@ -10,4 +10,4 @@ mp.set_nugrid_path('/home/nugrid/CADC/NuGrid')
 ms.set_nugrid_path('/home/nugrid/CADC/NuGrid')
 
 #%pylab inline
-%matplotlib nbagg
+%pylab nbagg
