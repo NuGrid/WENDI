@@ -581,7 +581,7 @@ def start_SYGMA():
                     for item in plot_data:
                         kwargs = dict(item)
                         label = name + ": " + kwargs["yaxis"] + ", " + tot_mass_labels[kwargs["source"]]
-                        kwargs.update({"label":label, "xaxis":"Log-scaled age [yr]"})
+                        kwargs.update({"label":label})
                         kwargs.update(styles.get_style())
                         data.plot_spectro(**kwargs)
         elif state=="plot_mass_range":
