@@ -25,8 +25,8 @@ def start_SYGMA():
     yield_list = {"Analytic perscription":{"Delay":"yield_tables/agb_and_massive_stars_nugrid_MESAonly_fryer12delay.txt",
                   "Rapid":"yield_tables/agb_and_massive_stars_nugrid_MESAonly_fryer12rapid.txt",
                   #"Exclude neutron-alpha rich freeze-out":"yield_tables/isotope_yield_table_MESA_only_fryer12_exclnalpha.txt"}, 
-		  "Mix":"yield_tables/agb_and_massive_stars_nugrid_MESAonly_fryer12mix.txt",
-                  "Ye=0.4982":{"Fallback at Ye":"yield_tables/isotope_yield_table_MESA_only_ye.txt",
+		  "Mix":"yield_tables/agb_and_massive_stars_nugrid_MESAonly_fryer12mix.txt"},
+                  "Ye=0.4982":{"Fallback at Ye":"yield_tables/isotope_yield_table_MESA_only_ye.txt"}
                   #"Fallback motivated by GCE":"yield_tables/isotope_yield_table_MESA_only_ye_fallback.txt"}
 		  }
     group_style = {"border_style":"none", "border_radius":"0em"}
