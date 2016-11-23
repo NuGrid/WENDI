@@ -22,11 +22,13 @@ def start_SYGMA():
     frame.set_default_io_style(padding="0.25em", margin="0.25em", border_color="LightGrey", border_radius="0.5em")
     
     tablist = ["sim_page", "plot_page", "custom_imf_page", "get_table_page"]
-    yield_list = {"Analytic perscription":{"Delay":"yield_tables/isotope_yield_table_MESA_only_fryer12_delay.txt",
-                  "Rapid":"yield_tables/isotope_yield_table_MESA_only_fryer12_rapid.txt",
-                  "Exclude neutron-alpha rich freeze-out":"yield_tables/isotope_yield_table_MESA_only_fryer12_exclnalpha.txt"}, 
+    yield_list = {"Analytic perscription":{"Delay":"yield_tables/agb_and_massive_stars_nugrid_MESAonly_fryer12delay.txt",
+                  "Rapid":"yield_tables/agb_and_massive_stars_nugrid_MESAonly_fryer12rapid.txt",
+                  #"Exclude neutron-alpha rich freeze-out":"yield_tables/isotope_yield_table_MESA_only_fryer12_exclnalpha.txt"}, 
+		  "Mix":"yield_tables/agb_and_massive_stars_nugrid_MESAonly_fryer12mix.txt",
                   "Ye=0.4982":{"Fallback at Ye":"yield_tables/isotope_yield_table_MESA_only_ye.txt",
-                  "Fallback motivated by GCE":"yield_tables/isotope_yield_table_MESA_only_ye_fallback.txt"}}
+                  #"Fallback motivated by GCE":"yield_tables/isotope_yield_table_MESA_only_ye_fallback.txt"}
+		  }
     group_style = {"border_style":"none", "border_radius":"0em"}
     text_box_style = {"width":"10em"}
     button_style = {"font_size":"1.25em", "font_weight":"bold"}
@@ -245,8 +247,8 @@ def start_SYGMA():
     frame.set_state_attribute('init_Z', visible=True, description="Initial metallicity: ", options=["0.02", "0.01", "0.006", "0.001", "0.0001", "0.0"])
     
     frame.set_state_attribute('time_group', visible=True, **group_style)
-    frame.set_state_attribute('t_end', visible=True, description="Final time [yrs]: ", value="1.0e10", **text_box_style)
-    frame.set_state_attribute('dt', visible=True, description="Time step [yrs]: ", value="1.0e7", **text_box_style)
+    frame.set_state_attribute('t_end', visible=True, description="Final time [yr]: ", value="1.0e10", **text_box_style)
+    frame.set_state_attribute('dt', visible=True, description="Time step [yr]: ", value="1.0e7", **text_box_style)
     
     frame.set_state_attribute('imf_type_group', visible=True, **group_style)
     frame.set_state_attribute('imf_type', visible=True, description="IMF type: ", options=['salpeter', 'chabrier', 'kroupa', 'alphaimf'] + list_custom_imf())
@@ -260,7 +262,7 @@ def start_SYGMA():
     frame.set_state_attribute('use_sn1a', visible=True, description="Include SNe Ia: ", value=True)
     frame.set_state_attribute("yield_table_group", visible=True, **group_style)
     frame.set_state_attribute("yield_table_selection", visible=True, description="CCSN remnant prescription:", options=["Analytic perscription", "Ye=0.4982"], value="Ye=0.4982")
-    frame.set_state_attribute('yield_table_list', visible=True, options=yield_list["Ye=0.4982"], selected_label="Fallback at Ye")
+    frame.set_state_attribute('yield_table_list', visible=True, options=yield_list["Analytic perscription"], selected_label="Delay")
     frame.set_state_links("sn1a_link", [("use_sn1a", "value"), ("sn1a_rates", "visible")], directional=True)
     
     frame.set_state_attribute('sn1a_rates', description="SNe Ia rates: ", options=['Power law', 'Exponential', 'Gaussian','Maoz12'])
