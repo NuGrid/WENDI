@@ -16,7 +16,7 @@ from matplotlib import pyplot, colors
 
 def start_OMEGA():
     tablist = ["sculptor", "carina", "fornax"]
-    yield_table = 'yield_tables/agb_and_massive_stars_nugrid_MESAonly_ye.txt.txt'
+    yield_table = 'yield_tables/agb_and_massive_stars_nugrid_MESAonly_ye.txt'
                     
     mgal_factor = {"sculptor":1.51e9, "carina":3.4e6, "fornax":7.08e8}
                     
