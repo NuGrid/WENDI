@@ -1,0 +1,40 @@
+
+git clone https://github.com/NuGrid/NuPyCEE.git
+git clone https://github.com/NuGrid/WENDI.git
+#git clone https://github.com/NuGrid/NuGridPy.git
+#pip install git+https://github.com/NuGrid/NuGridPy
+
+#GET nb_tools from https://github.com/swjones/nugrid-wendocker/tree/master/public-notebook
+wget https://raw.githubusercontent.com/swjones/nugrid-wendocker/master/public-notebook/nb_tools.py
+
+#wget https://raw.githubusercontent.com/swjones/nugrid-wendocker/master/public-notebook/run-ipython-notebook.bash
+
+
+#new conda env requires installation of all packages else other packages from outside are taken: ipython+jupyter+
+
+
+jupyter_notebook_config.py is run when the notebook server starts, not when a kernel starts. The kernel startup is up to IPython (for Python kernels).
+
+
+
+We use in jupyter session py35 and py27 environments from conda.
+
+  503  conda create -n py355 python=3.5 ipykernel
+  504  conda create -n py277 python=2.7 ipykernel
+
+py355: 
+	pip install jupyter
+pip install git+https://github.com/fherwig/nupy
+conda install nb_conda_kernels
+
+py277
+pip install git+https://github.com/fherwig/nupy
+pip install matplotlib
+pip install scipy
+pip install h5py
+pip install JSAnimation
+
+
+
+  534  conda install -c conda-forge ipywidgets
+  535  jupyter-nbextension enable --py --sys-prefix widgetsnbextension
