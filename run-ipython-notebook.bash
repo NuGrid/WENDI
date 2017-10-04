@@ -21,11 +21,14 @@ IPN_URL="https://github.com/NuGrid/WENDI.git"
 IPN_DIR="${IPN_LOCAL}/notebooks"
 NUPYCEE_URL="https://github.com/NuGrid/NuPyCEE.git"
 
-#get WENDI 
-[[ -d ${IPN_DIR} ]] || git clone --depth 1 ${IPN_URL} ${IPN_LOCAL}
+#get WENDI, for now get my SYGMAwidget branch
+[[ -d ${IPN_DIR} ]] || git clone --depth 1 -b  SYGMAwidget ${IPN_URL} ${IPN_LOCAL}
 
 #get NuPyCEE
 [[ -d ${NUPYCEE_DIR} ]] || git clone --depth 1 ${NUPYCEE_URL} ${NUPYCEE_DIR}
+
+#get nb_tools.py
+wget https://raw.githubusercontent.com/swjones/nugrid-wendocker/master/public-notebook/nb_tools.py
 
 # move startup files from WENDI to IPython profile
 echo 'teststest'
