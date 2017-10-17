@@ -1,9 +1,23 @@
 import matplotlib
 import sys, os
-sys.path.append('/home/user/notebooks/NuPyCEE')
+sys.path.append('/home/users/notebooks/NuPyCEE')
+
 #temp fix
-if os.path.isdir("/home/user/notebooks/NuPyCEE"):
-    os.environ["SYGMADIR"] = "/home/user/notebooks/NuPyCEE"
+if os.path.isdir("#This cell will be executed outside of this notebook\
+import sys, os
+sys.path.append('../')
+sys.path.append('../modules')
+from nugridpy import nugridse as mp
+from nugridpy import mesa as ms
+from nb_tools import *
+from JSAnimation import IPython_display
+#from NuGrid_Mesa_Explorer import start_explorer
+from SYGMA import start_SYGMA
+#from OMEGA import start_OMEGA
+#mp.set_nugrid_path('/home/nugrid/CADC/NuGrid')
+#ms.set_nugrid_path('/home/nugrid/CADC/NuGrid')
+%pylab nbagg"):
+    os.environ["SYGMADIR"] = "/home/nugrid/NuPyCEE"
 
 import sygma as s
 
