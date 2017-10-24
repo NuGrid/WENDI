@@ -1,9 +1,9 @@
 import matplotlib
 import sys, os
-sys.path.append('/home/user/notebooks/NuPyCEE')
+sys.path.append('/usr/local/bin/NuPyCEE')
 #temp fix
-if os.path.isdir("/home/user/notebooks/NuPyCEE"):
-    os.environ["SYGMADIR"] = "/home/user/notebooks/NuPyCEE"
+if os.path.isdir("/usr/local/bin/NuPyCEE"):
+    os.environ["SYGMADIR"] = "/usr/local/bin/NuPyCEE"
 
 import sygma as s
 
