@@ -13,7 +13,7 @@ NuGrid provides stellar evolution and post-processing nucleosynthesis data for e
 
 The web interface of The Stellar Yields for Galactic Modeling Applications (SYGMA) module.
 The module allows to calculate the ejecta and stellar feedback of simple stellar populations as a function of time.
-You can find it in the [SYGMA](SYGMA/) directory.
+You can find it in the ***SGYMA*** directory.
 
 
 ## NuPyCEE
