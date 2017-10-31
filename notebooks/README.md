@@ -16,7 +16,3 @@ The module allows to calculate the ejecta and stellar feedback of simple stellar
 You can find it in the ***SGYMA*** directory.
 
 
-## NuPyCEE
-
-The NuGrid Python Chemical Evolution Environment (NuPyCEE) allows to simulate the chemical enrichment and stellar feedback of stellar populations. 
-NuPyCEE can be run in the ***NuPyCEE*** directory. Teaching and userguides for NuPyCEE are also provided.
