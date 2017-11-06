@@ -1,15 +1,19 @@
 import matplotlib
-import os
-
+import sys, os
+sys.path.append('/usr/local/bin/NuPyCEE')
 #temp fix
-if os.path.isdir("/home/nugrid/omega_sygma"):
-    os.environ["SYGMADIR"] = "/home/nugrid/omega_sygma"
+if os.path.isdir("/usr/local/bin/NuPyCEE"):
+    os.environ["SYGMADIR"] = "/usr/local/bin/NuPyCEE"
 
 import sygma as s
 
 import widget_framework as framework
 from widget_utils import float_text, auto_styles
-from IPython.html import widgets
+
+#from IPython.html import widgets
+import ipywidgets as widgets
+
+
 from IPython.display import display, clear_output
 from matplotlib import pyplot
 import numpy
@@ -18,9 +22,12 @@ from imp import load_source
 
 def start_SYGMA():
     frame = framework.framework()
-    frame.set_default_display_style(padding="0.25em",background_color="white", border_color="LightGrey", border_radius="0.5em")
-    frame.set_default_io_style(padding="0.25em", margin="0.25em", border_color="LightGrey", border_radius="0.5em")
-    
+    #frame.set_default_display_style(padding="0.25em",background_color="white", border_color="LightGrey", border_radius="0.5em")
+    #frame.set_default_io_style(padding="0.25em", margin="0.25em", border_color="LightGrey", border_radius="0.5em")
+    frame.set_default_display_style(border="0.5em LightGrey")
+    frame.set_default_io_style(margin="0.25em", border="0.5em LightGrey")
+  
+
     tablist = ["sim_page", "plot_page", "custom_imf_page", "get_table_page"]
     yield_list = {"Analytic perscription":{"Delay":"yield_tables/agb_and_massive_stars_nugrid_MESAonly_fryer12delay.txt",
                   "Rapid":"yield_tables/agb_and_massive_stars_nugrid_MESAonly_fryer12rapid.txt",
@@ -29,11 +36,17 @@ def start_SYGMA():
                   "Ye=0.4982":{"Fallback at Ye":"yield_tables/agb_and_massive_stars_nugrid_MESAonly_ye.txt"}
                   #"Fallback motivated by GCE":"yield_tables/isotope_yield_table_MESA_only_ye_fallback.txt"}
 		  }
-    group_style = {"border_style":"none", "border_radius":"0em"}
-    text_box_style = {"width":"10em"}
-    button_style = {"font_size":"1.25em", "font_weight":"bold"}
-    first_tab_style = {"border_radius":"0em 0.5em 0.5em 0.5em"}
-    
+    #group_style = {"border_style":"none", "border_radius":"0em"}
+    group_style = {"border":"0em none","margin":" 0em 0em 0em 0em"}
+
+    # width: width of input fields e.g. for Total stellar time
+    text_box_style = {"width":"14em",'description_width':'initial'}
+    #button_style = {"font_size":"1.25em", "font_weight":"bold"}
+    button_style = {"font_weight":"bold",'description_width':'initial'} #no fontsize
+
+    #first_tab_style = {"border_radius":"0em 0.5em 0.5em 0.5em"}
+    first_tab_style = {"border":"0.5em"}
+   
     custom_imf_dir = os.environ["SYGMADIR"] + "/SYGMA_widget_imfs/"
     default_custom_imf_text = "\n#File to define a custom IMF\n#Define your IMF in custom_imf\n#so that the return value represents\n#the chosen IMF value for the input mass\n\ndef custom_imf(mass):\n    #Salpeter IMF\n    return mass**-2.35\n"
     
@@ -74,12 +87,16 @@ def start_SYGMA():
     frame.set_state_data("run_count", 0)
     
     def add_run(data, name, Z):
+	'''
+	Save SYGMA instance and other information of successfull run. Add to stack of previous simulations.
+	'''
+
         run_count = frame.get_state_data("run_count")
         runs_data = frame.get_state_data("runs")
         widget_name = "runs_widget_#"+str(run_count)
         
         frame.add_io_object(widget_name)
-        frame.set_state_attribute(widget_name, visible=True, description=name)
+        frame.set_state_attribute(widget_name, visibility='visible', description=name)
         frame.set_object(widget_name, widgets.Checkbox())
         
         runs_data.append((data, name, Z, widget_name))
@@ -118,7 +135,7 @@ def start_SYGMA():
             return []
     
     frame.add_display_object("window")
-    frame.add_io_object("title")
+    #frame.add_io_object("title")
     frame.add_display_object("widget_runs_group")
     frame.add_display_object("widget")
 
@@ -159,8 +176,11 @@ def start_SYGMA():
     
     frame.add_io_object("plot_type")
     frame.add_io_object("sim_responce")
-    
-    frame.set_state_children("window", ["title", "widget_runs_group"])
+
+    # define relation between display widgets and children
+    #frame.set_state_children("window", ["title", "widget_runs_group"])
+    frame.set_state_children("window", ["widget_runs_group"])
+
     frame.set_state_children("widget_runs_group", ["widget", "runs"])
 
     frame.set_state_children("widget", ["sim_page"], titles=["Simulation"])
@@ -193,7 +213,8 @@ def start_SYGMA():
     frame.add_io_object("elem_numer")
     frame.add_io_object("elem_denom")
     frame.add_io_object("plot")
-    
+
+    # define relation between display widgets and children
     frame.set_state_children("widget", ["plot_page"], titles=["Plotting"])
     frame.set_state_children("plot_page", ["warning_msg", "plot_type", "plot_name", "source_over_plotting_group", "species_group", "elem_numer", "elem_denom", "plot"])
     frame.set_state_children("source_over_plotting_group", ["source", "over_plotting", "clear_plot"])
@@ -214,6 +235,7 @@ def start_SYGMA():
     
     frame.add_io_object("test_imf")
 
+    # define relation between display widgets and children
     frame.set_state_children("widget", ["custom_imf_page"], titles=["Custom IMF"])
     frame.set_state_children("custom_imf_page", ["load_save_imf_group", "text_imf", "test_imf"])
     frame.set_state_children("load_save_imf_group", ["load_imf", "list_imfs", "name_imf", "save_imf", "delete_imf"])
@@ -228,54 +250,57 @@ def start_SYGMA():
     frame.add_io_object("get_table")
     frame.add_io_object("table_links")
     
+    # define relation between display widgets and children
     frame.set_state_children("widget", ["get_table_page"], titles=["Download Tables"])
     frame.set_state_children("get_table_page", ["warning_msg",  "species_mult_group", "get_table", "table_links"])
     frame.set_state_children("species_mult_group", ["iso_or_elem", "species_mult"])
         
             
-    frame.set_state_attribute('window', visible=True, **group_style)
-    frame.set_state_attribute('title', visible=True, value="<center><h1>SYGMA</h1></center>")
-    frame.set_state_attribute("widget_runs_group", visible=True, **group_style)
-    frame.set_state_attribute('widget', visible=True, **group_style)
-    frame.set_state_attribute("runs", visible=True, margin="3.15em 0em 0em 0em")
-    frame.set_state_attribute("runs", states_cimf, visible=False)
-    frame.set_state_attribute("runs_title", visible=True, value="<center><h2>Runs</h2></center>", **group_style)
+    #set layout of interface
+    frame.set_state_attribute('window',visibility='visible', **group_style)
+    #frame.set_state_attribute('title', visibility='visible', value="<center><h1>SYGMA<br></h1></center>",margin="3.15em 3.5em 3.5em 3.5em")
+    frame.set_state_attribute("runs_title", visibility='visible', value="<center><h2>Runs</h2></center>", margin="0em 0em 0em 0em",border="0em none")
+    frame.set_state_attribute("runs", visibility='visible',margin="0em 0em 0em 0em",border="0em none")
+
+    frame.set_state_attribute("widget_runs_group", visibility='visible', **group_style)
+    frame.set_state_attribute('widget', visibility='visible', **group_style)
+    frame.set_state_attribute("runs", states_cimf, visibility='hidden')
+      
+    frame.set_state_attribute('sim_page', visibility='visible', **first_tab_style)
+    frame.set_state_attribute("mass_Z_group", visibility='visible', **group_style)
+    frame.set_state_attribute("mass_gas", visibility='visible', description="Total stellar mass [$M_{\odot}$]:", value="1.0", **text_box_style)
+    frame.set_state_attribute('init_Z', visibility='visible', description="Initial metallicity: ", options=["0.02", "0.01", "0.006", "0.001", "0.0001", "0.0"], **text_box_style)
     
-    frame.set_state_attribute('sim_page', visible=True, **first_tab_style)
-    frame.set_state_attribute("mass_Z_group", visible=True, **group_style)
-    frame.set_state_attribute("mass_gas", visible=True, description="Total stellar mass [$M_{\odot}$]:", value="1.0", **text_box_style)
-    frame.set_state_attribute('init_Z', visible=True, description="Initial metallicity: ", options=["0.02", "0.01", "0.006", "0.001", "0.0001", "0.0"])
+    frame.set_state_attribute('time_group', visibility='visible', **group_style)
+    frame.set_state_attribute('t_end', visibility='visible', description="Final time [yr]: ", value="1.0e10", **text_box_style)
+    frame.set_state_attribute('dt', visibility='visible', description="Time step [yr]: ", value="1.0e7", **text_box_style)
     
-    frame.set_state_attribute('time_group', visible=True, **group_style)
-    frame.set_state_attribute('t_end', visible=True, description="Final time [yr]: ", value="1.0e10", **text_box_style)
-    frame.set_state_attribute('dt', visible=True, description="Time step [yr]: ", value="1.0e7", **text_box_style)
-    
-    frame.set_state_attribute('imf_type_group', visible=True, **group_style)
-    frame.set_state_attribute('imf_type', visible=True, description="IMF type: ", options=['salpeter', 'chabrier', 'kroupa', 'alphaimf'] + list_custom_imf())
+    frame.set_state_attribute('imf_type_group', visibility='visible', **group_style)
+    frame.set_state_attribute('imf_type', visibility='visible', description="IMF type: ", options=['salpeter', 'chabrier', 'kroupa', 'alphaimf'] + list_custom_imf(),**text_box_style)
     frame.set_state_attribute('imf_alpha', description="Set alpha: ", min=0, max=5)
     
-    frame.set_state_attribute("imf_mass_group", visible=True, **group_style)
-    frame.set_state_attribute('imf_mass_min', visible=True, description="IMF lower limit [$M_{\odot}$]: ", value="1.0", **text_box_style)
-    frame.set_state_attribute('imf_mass_max', visible=True, description="IMF upper limit [$M_{\odot}$]: ", value="30.0", **text_box_style)
+    frame.set_state_attribute("imf_mass_group", visibility='visible', **group_style)
+    frame.set_state_attribute('imf_mass_min', visibility='visible', description="IMF lower limit [$M_{\odot}$]: ", value="1.0", **text_box_style)
+    frame.set_state_attribute('imf_mass_max', visibility='visible', description="IMF upper limit [$M_{\odot}$]: ", value="30.0", **text_box_style)
     
-    frame.set_state_attribute('sn1a_group', visible=True, **group_style)
-    frame.set_state_attribute('use_sn1a', visible=True, description="Include SNe Ia: ", value=True)
-    frame.set_state_attribute("yield_table_group", visible=True, **group_style)
-    frame.set_state_attribute("yield_table_selection", visible=True, description="CCSN remnant prescription:", options=["Analytic perscription", "Ye=0.4982"], value="Analytic perscription")
-    frame.set_state_attribute('yield_table_list', visible=True, options=yield_list["Analytic perscription"], selected_label="Delay")
-    frame.set_state_links("sn1a_link", [("use_sn1a", "value"), ("sn1a_rates", "visible")], directional=True)
+    frame.set_state_attribute('sn1a_group', visibility='visible', **group_style)
+    frame.set_state_attribute('use_sn1a', visibility='visible', description="Include SNe Ia: ", value=True)
+    frame.set_state_attribute("yield_table_group", visibility='visible', **group_style)
+    frame.set_state_attribute("yield_table_selection", visibility='visible', description="CCSN remnant prescription:", options=["Analytic perscription", "Ye=0.4982"], value="Analytic perscription")
+    frame.set_state_attribute('yield_table_list', visibility='visible', options=yield_list["Analytic perscription"], selected_label="Delay",**text_box_style)
+    frame.set_state_links("sn1a_link", [("use_sn1a", "visibility"), ("sn1a_rates", "visibility")], directional=True) #changed value to visibiltiy
     
-    frame.set_state_attribute('sn1a_rates', description="SNe Ia rates: ", options=['Power law', 'Exponential', 'Gaussian','Maoz12'])
+    frame.set_state_attribute('sn1a_rates', description="SNe Ia rates: ", options=['Power law', 'Exponential', 'Gaussian','Maoz12'],**text_box_style)
     
-    frame.set_state_attribute("run_sim_remove_run_group", visible=True, **group_style)
-    frame.set_state_attribute('run_sim', visible=True, description="Run simulation", **button_style)
-    frame.set_state_attribute("remove_run", visible=True, description="Remove selected", **button_style)
-    frame.set_state_attribute("run_name", visible=True, description="Run name: ", placeholder="Enter name", value="", **text_box_style)
+    frame.set_state_attribute("run_sim_remove_run_group", visibility='visible', **group_style)
+    frame.set_state_attribute('run_sim', visibility='visible', description="Run simulation", **button_style)
+    frame.set_state_attribute("remove_run", visibility='visible', description="Remove selected", **button_style)
+    frame.set_state_attribute("run_name", visibility='visible', description="Run name: ", placeholder="Enter name", value="", **text_box_style)
     
     frame.set_state_attribute("sim_responce", value="<p>Simulation data loaded.</p>", **group_style)
-    frame.set_state_attribute("sim_responce", states_sim_plot, visible=True)
+    frame.set_state_attribute("sim_responce", states_sim_plot, visibility='visible')
     
-    frame.set_state_attribute('plot_type', states_sim_plot, visible=True, description="Plot type: ", options=["Total mass", "Species mass", "Species spectroscopic", "Mass range contributions"])
+    frame.set_state_attribute('plot_type', states_sim_plot, visibility='visible', description="Plot type: ", options=["Total mass", "Species mass", "Species spectroscopic", "Mass range contributions"])
     
     def mass_gas_handler(name, value):
         frame.set_attributes("mass_gas", value=float_text(value))
@@ -294,22 +319,26 @@ def start_SYGMA():
     
     def sel_imf_type(attribute, value):
         if value=="alphaimf":
-            frame.set_state_attribute("imf_alpha", visible=True)
-            frame.set_attributes("imf_alpha", visible=True, value=2.35)
+            frame.set_state_attribute("imf_alpha", visibility='visible')
+            frame.set_attributes("imf_alpha", visibility='visible', value=2.35)
         else:
-            frame.set_state_attribute("imf_alpha", visible=False)
-            frame.set_attributes("imf_alpha", visible=False)
+            frame.set_state_attribute("imf_alpha", visibility='hidden')
+            frame.set_attributes("imf_alpha", visibility='hidden')
             
     def yield_table_selection_handler(name, value):
         frame.set_attributes("yield_table_list", options=yield_list[value])
         if value == "Analytic perscription":
-            frame.set_attributes("yield_table_list", selected_label="Delay")
+            frame.set_attributes("yield_table_list", selected_label="Delay",**text_box_style)
         elif value == "Ye=0.4982":
             frame.set_attributes("yield_table_list", selected_label="Fallback at Ye")        
     
     def run_simulation(widget):
-        frame.set_attributes("sim_responce", visible=False)
-        clear_output()
+	'''
+	   Run the simulation. Retrieve atributes as input for SYGMA and run SYGMA.
+	'''
+
+        frame.set_attributes("sim_responce", visibility='hidden')
+        #clear_output(wait=True) #closing the window widget
         pyplot.close("all")
         
         sn1a_map = {"Power law":"power_law", "Gaussian":"gauss","Exponential":"exp","Maoz12":"maoz"}
@@ -336,33 +365,46 @@ def start_SYGMA():
         name = frame.get_attribute("run_name", "value")
         if name == "":
             name = "Run - "+"%03d" % (run_count + 1, )
-        
-        if iniZ==0.0:
-            data=s.sygma(mgal=mgal, iniZ=iniZ, imf_type=imf_type, alphaimf=alphaimf, imf_bdys=[10.1, 100.0], imf_bdys_pop3=imf_bdys, sn1a_on=sn1a_on,
-                         sn1a_rate=sn1a_rate, dt=dt,tend=tend, table=yield_table)
-        else:
-            data=s.sygma(mgal=mgal, iniZ=iniZ, imf_type=imf_type, alphaimf=alphaimf, imf_bdys=imf_bdys, sn1a_on=sn1a_on,
-                         sn1a_rate=sn1a_rate, dt=dt,tend=tend, table=yield_table)
+       	import sys 
+	#sys.stdout = open(os.devnull, 'w')
+	if iniZ==0.0:
+		data=s.sygma(mgal=mgal, iniZ=iniZ, imf_type=imf_type, alphaimf=alphaimf, imf_bdys=[10.1, 100.0], imf_bdys_pop3=imf_bdys, sn1a_on=sn1a_on,
+			  sn1a_rate=sn1a_rate, dt=dt,tend=tend, table=yield_table)
+	else:
+		data=s.sygma(mgal=mgal, iniZ=iniZ, imf_type=imf_type, alphaimf=alphaimf, imf_bdys=imf_bdys, sn1a_on=sn1a_on,
+		 sn1a_rate=sn1a_rate, dt=dt,tend=tend, table=yield_table)
+	#sys.stdout = sys.__stdout__
         frame.set_state("run_sim")
         ##force reset plottype
         frame.set_attributes("plot_type", selected_label="Species mass", value="Species mass")
         frame.set_attributes("plot_type", selected_label="Total mass", value="Total mass")
-        
+       
+        #save simulation, results and name.
         add_run(data, name, iniZ)
+
+	#add attributes, widgets back to default.
         frame.update()
+	#frame.display_object("window",state=frame._state)
+	#display(frame._object_list["window"])
+	#display(self._object_list["window"])
+
 
     def remove_simulation(widget):
         remove_runs()
         frame.update()    
         
     def sel_tab(name, value):
+       '''
+       Set state, data etc. corresponding to tab selected.
+       '''
+
        open_tab = tablist[value]
        
        if open_tab == "custom_imf_page":
            frame.set_state_data("old_state", frame.get_state())
            frame.set_state("custom_imf")
            if frame.get_attribute("name_imf", "value") == "":
-               frame.set_attributes("text_imf", value=default_custom_imf_text)
+		   frame.set_attributes("text_imf", value=default_custom_imf_text,width='20em',height='20em',right='0em',margin="0em 0em 0em 0em")
        else:
            if frame.get_state() in states_cimf:
                old_state = frame.get_state_data("old_state")
@@ -371,7 +413,9 @@ def start_SYGMA():
                else:
                    frame.set_state("default")
                frame.set_state_data("old_state", None)
-    
+       #print 'sel_tab, set state:',frame._state
+  
+    # set callbacks/functions
     frame.set_state_callbacks("mass_gas", mass_gas_handler)        
     frame.set_state_callbacks("t_end", t_end_handler)        
     frame.set_state_callbacks("dt", dt_handler)        
@@ -384,7 +428,7 @@ def start_SYGMA():
     frame.set_state_callbacks("widget", sel_tab, "selected_index")
     
     frame.set_object("window", widgets.Box())
-    frame.set_object("title", widgets.HTML())
+    #frame.set_object("title", widgets.HTML())
     frame.set_object("widget_runs_group", widgets.HBox())
     frame.set_object("widget", widgets.Tab())
     frame.set_object("runs", widgets.VBox())
@@ -426,30 +470,32 @@ def start_SYGMA():
     frame.set_object("plot_type", widgets.Dropdown())
     
     
-    frame.set_state_attribute("plot_page", visible=True)
-    frame.set_state_attribute("warning_msg", visible=True, value="<h3>Error: No simulation data!</h3>", **group_style)
-    frame.set_state_attribute("warning_msg", states_plot, visible=False)
+    frame.set_state_attribute("plot_page", visibility='visible')
+    frame.set_state_attribute("warning_msg", visibility='visible', value="<h3>Error: No simulation data!</h3>", **group_style)
+    frame.set_state_attribute("warning_msg", states_plot, visibility='hidden')
     frame.set_state_attribute("plot_name", **group_style)
-    frame.set_state_attribute("plot_name", "plot_totmasses", visible=True, value="<h2>Plot: Total mass evolution</h2>")
-    frame.set_state_attribute("plot_name", "plot_mass", visible=True, value="<h2>Plot: Species mass evolution</h2>")
-    frame.set_state_attribute("plot_name", "plot_spectro", visible=True, value="<h2>Plot: Spectroscopic Mass evolution</h2>")
-    frame.set_state_attribute("plot_name", "plot_mass_range", visible=True, value="<h2>Plot: Mass range contributions</h2><p>Only ejecta from AGB and massive stars are considered.</p>")
+    frame.set_state_attribute("plot_name", "plot_totmasses", visibility='visible', value="<h2>Plot: Total mass evolution</h2>")
+    frame.set_state_attribute("plot_name", "plot_mass", visibility='visible', value="<h2>Plot: Species mass evolution</h2>")
+    frame.set_state_attribute("plot_name", "plot_spectro", visibility='visible', value="<h2>Plot: Spectroscopic Mass evolution</h2>")
+    frame.set_state_attribute("plot_name", "plot_mass_range", visibility='visible', value="<h2>Plot: Mass range contributions</h2><p>Only ejecta from AGB and massive stars are considered.</p>")
     
-    frame.set_state_attribute("source_over_plotting_group", states_plot, visible=True, **group_style)
-    frame.set_state_attribute("source", ["plot_totmasses", "plot_mass", "plot_spectro"], visible=True, description="Yield source: ", options=["All", "AGB", "SNe Ia", "Massive"], selected_label="All")
-    frame.set_state_attribute("over_plotting", visible=True, description="Over plotting", value=False, **button_style)
+    frame.set_state_attribute("source_over_plotting_group", states_plot, visibility='visible', **group_style)
+    frame.set_state_attribute("source", ["plot_totmasses", "plot_mass", "plot_spectro"], visibility='visible', description="Yield source: ", options=["All", "AGB", "SNe Ia", "Massive"], selected_label="All")
+    frame.set_state_attribute("over_plotting", visibility='visible', description="Over plotting", value=False, **button_style)
     frame.set_state_attribute("clear_plot", description="Clear plot", **button_style)
-    frame.set_state_links("clear_plot_link", [("over_plotting", "value"), ("clear_plot", "visible")], directional=True)
+    frame.set_state_links("clear_plot_link", [("over_plotting", "visibility"),("clear_plot", "visibility")], directional=True) #changd value to visibiliy
     
-    frame.set_state_attribute("species_group", ["plot_mass", "plot_mass_range"], visible=True, **group_style)
-    frame.set_state_attribute("iso_or_elem", visible=True, description="species type: ", options=["Elements", "Isotopes"], selected_label="Elements")
-    frame.set_state_attribute("species", visible=True, description="Element: ", options=elements_all, **text_box_style)
-    frame.set_state_attribute("elem_numer", "plot_spectro", visible=True, description="Y-axis [X/Y], choose X: ", options=elements_all, **text_box_style)
-    frame.set_state_attribute("elem_denom", "plot_spectro", visible=True, description="Y-axis [X/Y], choose Y: ", options=elements_all, **text_box_style)
-    frame.set_state_attribute("plot", states_plot, visible=True, description="Generate Plot", **button_style)
-    
+    frame.set_state_attribute("species_group", ["plot_mass", "plot_mass_range"], visibility='visible', **group_style)
+    frame.set_state_attribute("iso_or_elem", visibility='visible', description="species type: ", options=["Elements", "Isotopes"], selected_label="Elements")
+    frame.set_state_attribute("species", visibility='visible', description="Element: ", options=elements_all, **text_box_style)
+    frame.set_state_attribute("elem_numer", "plot_spectro", visibility='visible', description="Y-axis [X/Y], choose X: ", options=elements_all, **text_box_style)
+    frame.set_state_attribute("elem_denom", "plot_spectro", visibility='visible', description="Y-axis [X/Y], choose Y: ", options=elements_all, **text_box_style)
+    frame.set_state_attribute("plot", states_plot, visibility='visible', description="Generate plot", **button_style)
+    #frame.set_state_attribute("plot", visibility='visible', description="Generate Plot", **button_style)
+    #frame.set_state_attribute("plot", states_plot, visibility='visible', description="Generate Plot", **button_style)
+
     def clear_plot_handler(widget):
-        clear_output()
+        clear_output(wait=True)
         pyplot.close("all")
         frame.set_state_data("over_plotting_data", [])
     
@@ -462,7 +508,8 @@ def start_SYGMA():
             frame.set_state("plot_spectro")
         elif value=="Mass range contributions":
             frame.set_state("plot_mass_range")
-        
+	#print 'sel_plot_type, set state:',frame._state
+       
 #        iniZ = float(frame.get_attribute("init_Z", "value"))
 #        if iniZ==0.0:
 #            frame.set_attributes("source", options=["All", "AGB", "Massive"])
@@ -502,12 +549,20 @@ def start_SYGMA():
             frame.set_attributes("species_mult", description="Element: ", options=elements_sel_mult)
         
     def run(widget):
-        styles = frame.get_state_data("styles")
-        styles.reset_line_count()
-    
-        clear_output()
+
+        #styles = frame.get_state_data("styles")
+        #styles.reset_line_count()
+   
+  
+   	#one of these two close widget window
+        clear_output(wait=True)
         pyplot.close("all")
-            
+	#display here
+	display(frame._object_list["window"]) #CR
+	#pyplot.figure()
+	#pyplot.plot([1,2,3],[3,1,2])
+	#return 
+
         over_plotting = frame.get_attribute("over_plotting", "value")
         source_map = {"All":"all", "AGB":"agb", "SNe Ia":"sn1a", "Massive":"massive"}
         label_map = {"All":"", "AGB":", AGB", "SNe Ia":", SNIa", "Massive":", Massive"}
@@ -517,7 +572,6 @@ def start_SYGMA():
         source = source_map[frame.get_attribute("source", "value")]
         label_source = label_map[frame.get_attribute("source", "value")]
         species = frame.get_attribute("species", "value")
-        
         no_runs = True
         
         if state=="plot_totmasses":
@@ -530,7 +584,6 @@ def start_SYGMA():
             if not over_plot in plot_data:
                 plot_data.append(over_plot)
                 frame.set_state_data("over_plotting_data", plot_data)
-            
             for data, name, Z, widget_name in runs:
                 if frame.get_attribute(widget_name, "value"):
                     no_runs = False
@@ -539,8 +592,11 @@ def start_SYGMA():
                         label = name + ": " + tot_mass_labels[kwargs["source"]]
                         kwargs.update({"label":label})
                         kwargs.update(styles.get_style())
+			#pyplot.figure()
+			#pyplot.plot([1,2,3],[3,1,2])
                         data.plot_totmasses(**kwargs)
-        elif state=="plot_mass":
+	    #return
+	elif state=="plot_mass":
             plot_data = frame.get_state_data("over_plotting_data")
             
             if not over_plotting:
@@ -586,6 +642,8 @@ def start_SYGMA():
                         kwargs.update({"label":label})
                         kwargs.update(styles.get_style())
                         data.plot_spectro(**kwargs)
+	    #display(frame._object_list["window"]) #CR
+
         elif state=="plot_mass_range":
             plot_data = frame.get_state_data("over_plotting_data")
             
@@ -614,7 +672,7 @@ def start_SYGMA():
     frame.set_state_callbacks("plot_type", sel_plot_type)
     frame.set_state_callbacks("source", sel_source, state=["plot_spectro", "plot_mass"])
     frame.set_state_callbacks("iso_or_elem", sel_iso_or_elem)
-    frame.set_state_callbacks("plot", run, attribute=None, type="on_click")
+    frame.set_state_callbacks("plot", run, attribute=None, type="on_click") #closes?
 
 
     frame.set_object("plot_page", widgets.VBox())
@@ -632,26 +690,29 @@ def start_SYGMA():
     frame.set_object("plot", widgets.Button())
 
 
-    frame.set_state_attribute("custom_imf_page", visible=True)
-    frame.set_state_attribute("load_save_imf_group", visible=True, **group_style)
-    frame.set_state_attribute("load_imf", "custom_imf", visible=True, description="Load custom IMF", **button_style)
-    frame.set_state_attribute("list_imfs", "load_custom_imf", visible=True, description="Select IMF")
-    frame.set_state_attribute("name_imf", "custom_imf", visible=True, description="IMF name", **text_box_style)
-    frame.set_state_attribute("save_imf", "custom_imf", visible=True, description="Save IMF", **button_style)
-    frame.set_state_attribute("delete_imf", "custom_imf", visible=True, description="Delete IMF", **button_style)
+    frame.set_state_attribute("custom_imf_page", visibility='visible')
+    frame.set_state_attribute("load_save_imf_group", visibility='visible',width='45em')#, **group_style)
+    frame.set_state_attribute("load_imf", "custom_imf", visibility='visible', description="Load custom IMF",width='18em',**button_style) #description_width='initial',width='10em') #, **button_style)
+    frame.set_state_attribute("list_imfs", "load_custom_imf", visibility='visible', description="Select IMF",description_width='initial')
+    frame.set_state_attribute("name_imf", "custom_imf", visibility='visible', description="IMF name",right='4em',width="8em",description_width='initial')#,left = '0em') #, **text_box_style)
+    frame.set_state_attribute("save_imf", "custom_imf", visibility='visible', description="Save IMF",right='3em',width='10em',description_width='initial') #,right = '15em',height='5em',top='10em')#, **button_style)
+    frame.set_state_attribute("delete_imf", "custom_imf", visibility='visible', description="Delete IMF",right='2em', width='10em') #description_width='initial')
+  #,right = '15em',height='5em',top='10em')#, **button_style)
 
-    frame.set_state_attribute("text_imf", visible=True)
+    frame.set_state_attribute("text_imf", visibility='visible')
 
-    frame.set_state_attribute("test_imf", visible=True, description="Test selected IMF file", **button_style)
+    frame.set_state_attribute("test_imf", visibility='visible', description="Test selected IMF", **button_style)
 
     def load_imf_handler(widget):
         frame.set_state("load_custom_imf")
+	#print 'load_imf_handler, set state: ',frame._state
         options = ["", "Preset: default"] + list_custom_imf()
         frame.set_attributes("list_imfs", options=options, value="", selected_label="")
     
     def sel_custom_imf(name, value):
         if value != "":
             frame.set_state("custom_imf")
+	    #print 'sel_custom_imf: set state: ',frame._state
             if value == "Preset: default":
                 frame.set_attributes("name_imf", value="")
                 frame.set_attributes("text_imf", value=default_custom_imf_text)
@@ -663,7 +724,7 @@ def start_SYGMA():
                 frame.set_attributes("text_imf", value=text)
 
     def save_imf_handler(widget):
-        clear_output()
+        #clear_output(wait=True)
         pyplot.close("all")
         imf_name = frame.get_attribute("name_imf", "value")
         
@@ -681,7 +742,7 @@ def start_SYGMA():
         frame.set_state_attribute('imf_type', options=['salpeter', 'chabrier', 'kroupa', 'alphaimf'] + list_custom_imf())
 
     def delete_imf_handler(widget):
-        clear_output()
+        #clear_output(wait=True)
         pyplot.close("all")
         imf_name = frame.get_attribute("name_imf", "value")
         
@@ -701,7 +762,7 @@ def start_SYGMA():
         frame.set_state_attribute('imf_type', options=['salpeter', 'chabrier', 'kroupa', 'alphaimf'] + list_custom_imf())
             
     def test_imf_handler(widget):
-        clear_output()
+        #clear_output(wait=True)
         pyplot.close("all")
 
         imf_name = frame.get_attribute("name_imf", "value")
@@ -751,17 +812,17 @@ def start_SYGMA():
     frame.set_object("test_imf", widgets.Button())
 
 
-    frame.set_state_attribute("get_table_page", visible=True)
+    frame.set_state_attribute("get_table_page", visibility='visible')
 
-    frame.set_state_attribute("warning_msg", visible=True, value="<h3>Error: No simulation data!</h3>", **group_style)
-    frame.set_state_attribute("warning_msg", states_plot, visible=False)
+    frame.set_state_attribute("warning_msg", visibility='visible', value="<h3>Error: No simulation data!</h3>", **group_style)
+    frame.set_state_attribute("warning_msg", states_plot, visibility='hidden')
     
-    frame.set_state_attribute("species_mult_group", states_sim_plot, visible=True, **group_style)
-    frame.set_state_attribute("iso_or_elem", visible=True, description="species type: ", options=["Elements", "Isotopes"], selected_label="Elements")
-    frame.set_state_attribute("species_mult", visible=True, description="Element: ", options=elements_sel_mult, **text_box_style)
+    frame.set_state_attribute("species_mult_group", states_sim_plot, visibility='visible', **group_style)
+    frame.set_state_attribute("iso_or_elem", visibility='visible', description="species type: ", options=["Elements", "Isotopes"], selected_label="Elements")
+    frame.set_state_attribute("species_mult", visibility='visible', description="Element: ", options=elements_sel_mult, **text_box_style)
 
-    frame.set_state_attribute("get_table", states_sim_plot, visible=True, description="Get table links", **button_style)
-    frame.set_state_attribute("table_links", states_sim_plot, visible=True, value="", **group_style)
+    frame.set_state_attribute("get_table", states_sim_plot, visibility='visible', description="Get table links", **button_style)
+    frame.set_state_attribute("table_links", states_sim_plot, visibility='visible', value="", **group_style)
     
     def species_mult_handler(name, value):
         if "All" in value:
@@ -772,11 +833,13 @@ def start_SYGMA():
                 value = tuple(isotopes_all)
             frame.set_attributes("species_mult", value=value, selected_labels=value)
         frame.set_attributes("table_links", value="")
-    
+   
+
     def get_table_handler(widget):
+
         iso_or_elem = frame.get_attribute("iso_or_elem", "value")
         species = list(frame.get_attribute("species_mult", "value"))
-
+	print 'get_table_handler'
         runs = frame.get_state_data("runs")
         title = "<h3>Data table links:</h3>"
         html = title
@@ -791,14 +854,14 @@ def start_SYGMA():
                     data.write_evol_table(species, [], file, "./")
                 elif iso_or_elem == "Isotopes":
                     data.write_evol_table([], species, file, "./")
+		print('create link')
                 html = html + "<p><a href=\"" + file + "\" target=\"_blank\" download>" + name + "</a></p>\n"
         
         if html == title:
             html = ""
             print("No runs selected.")
-        
         frame.set_attributes("table_links", value=html)
-        clear_output()
+        #clear_output(wait=True)
         pyplot.close("all")
         
     frame.set_state_callbacks("species_mult", species_mult_handler)
