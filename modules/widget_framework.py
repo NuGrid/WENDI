@@ -1,8 +1,5 @@
-#from IPython.html import widgets
-import ipywidgets as widgets
-
-#from Iython.utils import traitlets
-import traitlets
+from IPython.html import widgets
+from IPython.utils import traitlets
 from IPython.display import display
 
 class framework():
@@ -36,13 +33,8 @@ class framework():
         
     def update(self):
         self._update(self._state)
-        #self.display_object("window",state=self._state)
-	#self._object_list["window"].close()
-        #display(self._object_list["window"])
-
-
+        
     def _update(self, state="default"):
-	#print 'update state ',state
         for obj_name in self._object_list:
             ##apply attributes
             default_style = {}
@@ -65,8 +57,8 @@ class framework():
             attributes.update(default_attributes)
             attributes.update(state_attributes)
             
-            if not "visibility" in attributes:
-                attributes["visibility"] = 'hidden' #CR
+            if not "visible" in attributes:
+                attributes["visible"] = False
 
             self.set_attributes(obj_name, **attributes)
 
@@ -82,26 +74,16 @@ class framework():
         state_links = {}
         if state in self._links:
             state_links = self._links[state]
-       
-        #start from default links and update with state links
+        
         links_dict = default_links.copy()
         links_dict.update(state_links)
-       
-        #go over all links
+        
         for link_name in links_dict:
             directional, links_list = links_dict[link_name]
             links = []
             for link in links_list:
-		obj=self._object_list[link[0]]
-		if hasattr(obj,link[1]):
-                	links.append((self._object_list[link[0]], link[1]))
-		elif hasattr(obj.layout,link[1]):
-			links.append((self._object_list[link[0]].layout, link[1]))
-			#print 'layout used: ',
-		else:
-			raise ValueError("the object: "+str(obj)+"does not have attribute "+link[1])
+                links.append((self._object_list[link[0]], link[1]))
             if directional:
-		#print links
                 self._link_objects[link_name] = traitlets.dlink(*links)
             else:
                 self._link_objects[link_name] = traitlets.link(*links)
@@ -118,8 +100,7 @@ class framework():
             
         callbacks = default_callbacks.copy()
         callbacks.update(state_callbacks)
-       
-        #goes over all callback object list, for each object check methods e.g. on_click and activate
+        
         for obj_name in callbacks:
             for type in callbacks[obj_name]:
                 if hasattr(self._object_list[obj_name], type):
@@ -154,7 +135,6 @@ class framework():
         if obj_name in self._object_list:
             if state in self._state_list:
                 self.set_state(state)
-		#print 'display_object set state: ',state
                 display(self._object_list[obj_name])
             else:
                 raise ValueError("no state: "+state+" defined!")
@@ -177,7 +157,6 @@ class framework():
     def set_state(self, state="default"):
         if state in self._state_list:
             self._state = state
-	    #print 'set_state: ',state
             self.update()
         else:
             raise ValueError("no state: "+state+" defined!")
@@ -242,8 +221,7 @@ class framework():
                     if not (obj_name in self._attributes[state]):
                         self._attributes[state][obj_name]={}
                     for key in kwargs:
-			if not key=='visible': #CR
-                        	self._attributes[state][obj_name][key] = kwargs[key]
+                        self._attributes[state][obj_name][key] = kwargs[key]
                 else:
                     raise ValueError("no state: "+state+" defined!")
             else:
@@ -373,12 +351,6 @@ class framework():
         self._default_display_style = kwargs
         
     def set_attributes(self, obj_name, **kwargs):
-	#print 'plan to set attributes: ',kwargs
-
-	# border_radius,border-style,border_color now in border
-
-
-	#print 'object list: ',self._object_list
         if obj_name in self._object_list:
             un_ordered_keys = kwargs.keys()
             un_ordered_keys = list(set(un_ordered_keys) - set(self._order_of_operations))
@@ -395,31 +367,10 @@ class framework():
                         raise AttributeError(obj_name+" does not have attribute "+attr)
             
             for attr in un_ordered_keys: #apply all other attributes in an arbitrary order
-		#CR fast fix
-		attr1=attr
-		if attr=='visible':
-			attr1='visibility'
-			#visible true
-			if kwargs[attr]:
-				kwargs[attr] = 'visible'
-			else:
-				kwargs[attr] = 'hidden'
-
                 if hasattr(self._object_list[obj_name], attr):
-		    #print 'set attribute ',self._object_list[obj_name], attr1, kwargs[attr]
-                    setattr(self._object_list[obj_name], attr1, kwargs[attr])
-		#CR adoption due to new layout
-		elif hasattr(self._object_list[obj_name].layout, attr1):
-		    #print 'test for layout'
-		    setattr(self._object_list[obj_name].layout, attr1, kwargs[attr])
+                    setattr(self._object_list[obj_name], attr, kwargs[attr])
                 else:
-		    #print 'search for ',self._object_list[obj_name],'|', attr1,'|', kwargs[attr]
-		    try: 
-		    	#print 'test for style ',type(self._object_list[obj_name])
-			#print self._object_list[obj_name].style.keys
-		    	setattr(self._object_list[obj_name].style, attr1, kwargs[attr])
-		    except:
-                    	raise AttributeError(obj_name+" does not have attribute "+attr1)
+                    raise AttributeError(obj_name+" does not have attribute "+attr)
         else:
             raise ValueError("The object: "+obj_name+" is not defined!")
 
