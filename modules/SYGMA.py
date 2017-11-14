@@ -286,8 +286,8 @@ def start_SYGMA():
     frame.set_state_attribute('sn1a_group', visibility='visible', **group_style)
     frame.set_state_attribute('use_sn1a', visibility='visible', description="Include SNe Ia: ", value=True)
     frame.set_state_attribute("yield_table_group", visibility='visible', **group_style)
-    frame.set_state_attribute("yield_table_selection", visibility='visible', description="CCSN remnant prescription:", options=["Analytic perscription", "Ye=0.4982"], value="Analytic perscription")
-    frame.set_state_attribute('yield_table_list', visibility='visible', options=yield_list["Analytic perscription"], selected_label="Delay",**text_box_style)
+    frame.set_state_attribute("yield_table_selection", visibility='visible', description="CCSN remnant prescription:", options=["Analytic prescription", "Ye=0.4982"], value="Analytic prescription")
+    frame.set_state_attribute('yield_table_list', visibility='visible', options=yield_list["Analytic prescription"], selected_label="Delay",**text_box_style)
     frame.set_state_links("sn1a_link", [("use_sn1a", "visibility"), ("sn1a_rates", "visibility")], directional=True) #changed value to visibiltiy
     
     frame.set_state_attribute('sn1a_rates', description="SNe Ia rates: ", options=['Power law', 'Exponential', 'Gaussian','Maoz12'],**text_box_style)
@@ -327,7 +327,7 @@ def start_SYGMA():
             
     def yield_table_selection_handler(name, value):
         frame.set_attributes("yield_table_list", options=yield_list[value])
-        if value == "Analytic perscription":
+        if value == "Analytic prescription":
             frame.set_attributes("yield_table_list", selected_label="Delay",**text_box_style)
         elif value == "Ye=0.4982":
             frame.set_attributes("yield_table_list", selected_label="Fallback at Ye")        
