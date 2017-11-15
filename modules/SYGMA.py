@@ -209,6 +209,7 @@ def start_SYGMA():
     
     frame.add_display_object("species_group")
     frame.add_io_object("iso_or_elem")
+    frame.add_io_object("iso_or_elem2")
     frame.add_io_object("species")
     
     #frame.add_io_object("elem_numer")
@@ -254,7 +255,7 @@ def start_SYGMA():
     # define relation between display widgets and children
     frame.set_state_children("widget", ["get_table_page"], titles=["Download Tables"])
     frame.set_state_children("get_table_page", ["species_mult_group", "get_table", "table_links"])
-    frame.set_state_children("species_mult_group", ["iso_or_elem", "species_mult"])
+    frame.set_state_children("species_mult_group", ["iso_or_elem2", "species_mult"])
         
             
     #set layout of interface
@@ -493,7 +494,7 @@ def start_SYGMA():
     
     frame.set_state_attribute("species_group", ["plot_mass", "plot_mass_range"], visibility='visible', **group_style)
     frame.set_state_attribute("iso_or_elem",["plot_mass", "plot_mass_range","plot_spectro"], visibility='visible', description="species type: ", options=["Elements", "Isotopes"], selected_label="Elements")
-    #frame.set_state_attribute("iso_or_elem","plot_totmasses", visibility='hidden', description="species type: ", options=["Elements", "Isotopes"], selected_label="Elements")
+    frame.set_state_attribute("iso_or_elem",["plot_totmasses","plot_spectro"], visibility='hidden', description="species type: ", options=["Elements", "Isotopes"], selected_label="Elements")
     frame.set_state_attribute("species",["plot_mass", "plot_mass_range"], visibility='visible', description="Element: ", options=elements_all, **text_box_style)
     frame.set_state_attribute("species", "plot_spectro", visibility='visible', description="Y-axis [X/Y], choose X: ", options=elements_all, **text_box_style)
     frame.set_state_attribute("elem_denom", "plot_spectro", visibility='visible', description="Y-axis [X/Y], choose Y: ", options=elements_all, **text_box_style)
@@ -683,6 +684,7 @@ def start_SYGMA():
     frame.set_state_callbacks("plot_type", sel_plot_type)
     frame.set_state_callbacks("source", sel_source, state=["plot_spectro", "plot_mass"])
     frame.set_state_callbacks("iso_or_elem", sel_iso_or_elem)
+    frame.set_state_callbacks("iso_or_elem2", sel_iso_or_elem)
     frame.set_state_callbacks("plot", run, attribute=None, type="on_click") #closes?
 
 
@@ -695,6 +697,7 @@ def start_SYGMA():
     frame.set_object("clear_plot", widgets.Button())
     frame.set_object("species_group", widgets.VBox())
     frame.set_object("iso_or_elem", widgets.RadioButtons())
+    frame.set_object("iso_or_elem2", widgets.RadioButtons())
     frame.set_object("species", widgets.Select())
     #frame.set_object("elem_numer", widgets.Select())
     frame.set_object("elem_denom", widgets.Select())
@@ -829,7 +832,7 @@ def start_SYGMA():
     #frame.set_state_attribute("warning_msg", states_plot, visibility='hidden')
     
     frame.set_state_attribute("species_mult_group", states_sim_plot, visibility='visible', **group_style)
-    frame.set_state_attribute("iso_or_elem", visibility='visible', description="species type: ", options=["Elements", "Isotopes"], selected_label="Elements")
+    frame.set_state_attribute("iso_or_elem2", visibility='visible', description="species type: ", options=["Elements", "Isotopes"], selected_label="Elements")
     frame.set_state_attribute("species_mult", visibility='visible', description="Element: ", options=elements_sel_mult, **text_box_style)
 
     frame.set_state_attribute("get_table", states_sim_plot, visibility='visible', description="Get table links", **button_style)
@@ -837,7 +840,7 @@ def start_SYGMA():
     
     def species_mult_handler(name, value):
         if "All" in value:
-            iso_or_elem = frame.get_attribute("iso_or_elem", "value")
+            iso_or_elem = frame.get_attribute("iso_or_elem2", "value")
             if iso_or_elem == "Elements":
                 value = tuple(elements_all)
             elif iso_or_elem == "Isotopes":
@@ -848,7 +851,7 @@ def start_SYGMA():
 
     def get_table_handler(widget):
 
-        iso_or_elem = frame.get_attribute("iso_or_elem", "value")
+        iso_or_elem = frame.get_attribute("iso_or_elem2", "value")
         species = list(frame.get_attribute("species_mult", "value"))
 	print 'get_table_handler'
         runs = frame.get_state_data("runs")
@@ -880,7 +883,7 @@ def start_SYGMA():
 
     frame.set_object("species_mult_group", widgets.VBox())
     frame.set_object("species_mult", widgets.SelectMultiple())
-    frame.set_object("get_table_page", widgets.HBox())
+    frame.set_object("get_table_page", widgets.VBox())
     frame.set_object("get_table", widgets.Button())
     frame.set_object("table_links", widgets.HTML())
 
