@@ -47,7 +47,9 @@ def start_SYGMA():
     #first_tab_style = {"border_radius":"0em 0.5em 0.5em 0.5em"}
     first_tab_style = {"border":"0.5em"}
    
-    custom_imf_dir = os.environ["SYGMADIR"] + "/SYGMA_widget_imfs/"
+    #custom_imf_dir = os.environ["SYGMADIR"] + "/SYGMA_widget_imfs/"
+    custom_imf_dir = "./SYGMA_widget_imfs/"
+
     default_custom_imf_text = "\n#File to define a custom IMF\n#Define your IMF in custom_imf\n#so that the return value represents\n#the chosen IMF value for the input mass\n\ndef custom_imf(mass):\n    #Salpeter IMF\n    return mass**-2.35\n"
     
     states_plot = ["plot_totmasses", "plot_mass", "plot_spectro", "plot_mass_range"]
@@ -357,7 +359,8 @@ def start_SYGMA():
         yield_table = frame.get_attribute("yield_table_list", "value")
         
         if not (imf_type in ['salpeter', 'chabrier', 'kroupa', 'alphaimf']):
-            destination = os.environ["SYGMADIR"] + "/imf_input.py"
+            #destination = os.environ["SYGMADIR"] + "/imf_input.py"
+	    destination = "./imf_input.py"
             shutil.copy(custom_imf_dir + imf_type + ".py", destination)
             imf_type = "input"
         
@@ -808,8 +811,9 @@ def start_SYGMA():
         frame.set_state_attribute('imf_type', options=['salpeter', 'chabrier', 'kroupa', 'alphaimf'] + list_custom_imf())
             
     def test_imf_handler(widget):
-        #clear_output(wait=True)
+        clear_output(wait=True)
         pyplot.close("all")
+	display(frame._object_list["window"]) #CR
 
         imf_name = frame.get_attribute("name_imf", "value")
         
@@ -830,6 +834,8 @@ def start_SYGMA():
         yaxis = [0 for x in xaxis]
         for i, x in enumerate(xaxis):
             yaxis[i] = ci.custom_imf(x)
+        #close previous figures
+        
         pyplot.plot(xaxis, numpy.log10(yaxis))
         pyplot.title("IMF file test: " + imf_name)
         pyplot.xlabel("mass [$M_{\odot}$]")
