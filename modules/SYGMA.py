@@ -97,7 +97,7 @@ def start_SYGMA():
         
         frame.add_io_object(widget_name)
         frame.set_state_attribute(widget_name, visibility='visible', description=name)
-        frame.set_object(widget_name, widgets.ToggleButton())
+        frame.set_object(widget_name, widgets.ToggleButton(button_style = 'info'))
         
         runs_data.append((data, name, Z, widget_name))
         frame.set_state_children("runs", [widget_name])
@@ -260,7 +260,7 @@ def start_SYGMA():
     #set layout of interface
     frame.set_state_attribute('window',visibility='visible', **group_style)
     #frame.set_state_attribute('title', visibility='visible', value="<center><h1>SYGMA<br></h1></center>",margin="3.15em 3.5em 3.5em 3.5em")
-    frame.set_state_attribute("runs_title", visibility='visible', value="<p><b>Runs</b></p>", margin="0em 0em 0em 0em",border="5em none")
+    frame.set_state_attribute("runs_title", visibility='visible', value="<p><h4>Runs</h4></p>", margin="0em 0em 0em 4em",border="5em none")
     frame.set_state_attribute("runs", visibility='visible',margin="0em 0em 0em 0em",border="0em none")
     
     
@@ -493,6 +493,7 @@ def start_SYGMA():
     
     frame.set_state_attribute("species_group", ["plot_mass", "plot_mass_range"], visibility='visible', **group_style)
     frame.set_state_attribute("iso_or_elem",["plot_mass", "plot_mass_range","plot_spectro"], visibility='visible', description="species type: ", options=["Elements", "Isotopes"], selected_label="Elements")
+    #frame.set_state_attribute("iso_or_elem","plot_totmasses", visibility='hidden', description="species type: ", options=["Elements", "Isotopes"], selected_label="Elements")
     frame.set_state_attribute("species",["plot_mass", "plot_mass_range"], visibility='visible', description="Element: ", options=elements_all, **text_box_style)
     frame.set_state_attribute("species", "plot_spectro", visibility='visible', description="Y-axis [X/Y], choose X: ", options=elements_all, **text_box_style)
     frame.set_state_attribute("elem_denom", "plot_spectro", visibility='visible', description="Y-axis [X/Y], choose Y: ", options=elements_all, **text_box_style)
@@ -502,8 +503,11 @@ def start_SYGMA():
 
     def clear_plot_handler(widget):
         clear_output(wait=True)
-        pyplot.close("all")
-        frame.set_state_data("over_plotting_data", [])
+        pyplot.close('all')
+        display(frame._object_list['window']) #CR
+        #clear_output(wait=True)
+        #pyplot.close("all")
+        #frame.set_state_data("over_plotting_data", [])
     
     def sel_plot_type(attribute, value):
         if value=="Total mass":
