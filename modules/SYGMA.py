@@ -592,9 +592,19 @@ def start_SYGMA():
                         label = name + ": " + tot_mass_labels[kwargs["source"]]
                         kwargs.update({"label":label})
                         kwargs.update(styles.get_style())
-			#pyplot.figure()
-			#pyplot.plot([1,2,3],[3,1,2])
                         data.plot_totmasses(**kwargs)
+			try:
+				ax_tmp2=matplotlib.pyplot.gca()
+				x1,x2,y1,y2=ax_tmp2.axis()			
+				if x1>x11: x1 = x11
+				if x2<x22: x2 = x22
+				if y1>y11: y1 = y11
+				if y2<y22: y2 = y22
+				ax_tmp2.set_xlim(x1,x2)
+				ax_tmp2.set_ylim(y1,y2)	
+			except:
+				pass
+			x11,x22,y11,y22=matplotlib.pyplot.gca().axis()
 	    #return
 	elif state=="plot_mass":
             plot_data = frame.get_state_data("over_plotting_data")
@@ -618,6 +628,18 @@ def start_SYGMA():
                         kwargs.update({"label":label})
                         kwargs.update(styles.get_style())
                         data.plot_mass(**kwargs)
+			try:
+				ax_tmp2=matplotlib.pyplot.gca()
+				x1,x2,y1,y2=ax_tmp2.axis()			
+				if x1>x11: x1 = x11
+				if x2<x22: x2 = x22
+				if y1>y11: y1 = y11
+				if y2<y22: y2 = y22
+				ax_tmp2.set_xlim(x1,x2)
+				ax_tmp2.set_ylim(y1,y2)	
+			except:
+				pass
+			x11,x22,y11,y22=matplotlib.pyplot.gca().axis()
         elif state=="plot_spectro":
             X = frame.get_attribute("elem_numer", "value")
             Y = frame.get_attribute("elem_denom", "value")
@@ -642,6 +664,18 @@ def start_SYGMA():
                         kwargs.update({"label":label})
                         kwargs.update(styles.get_style())
                         data.plot_spectro(**kwargs)
+			try:
+				ax_tmp2=matplotlib.pyplot.gca()
+				x1,x2,y1,y2=ax_tmp2.axis()			
+				if x1>x11: x1 = x11
+				if x2<x22: x2 = x22
+				if y1>y11: y1 = y11
+				if y2<y22: y2 = y22
+				ax_tmp2.set_xlim(x1,x2)
+				ax_tmp2.set_ylim(y1,y2)	
+			except:
+				pass
+			x11,x22,y11,y22=matplotlib.pyplot.gca().axis()
 	    #display(frame._object_list["window"]) #CR
 
         elif state=="plot_mass_range":
@@ -664,6 +698,18 @@ def start_SYGMA():
                         kwargs.update({"label":label})
                         kwargs.update(styles.get_style())
                         data.plot_mass_range_contributions(**kwargs)
+			try:
+				ax_tmp2=matplotlib.pyplot.gca()
+				x1,x2,y1,y2=ax_tmp2.axis()			
+				if x1>x11: x1 = x11
+				if x2<x22: x2 = x22
+				if y1>y11: y1 = y11
+				if y2<y22: y2 = y22
+				ax_tmp2.set_xlim(x1,x2)
+				ax_tmp2.set_ylim(y1,y2)	
+			except:
+				pass
+			x11,x22,y11,y22=matplotlib.pyplot.gca().axis()
         if no_runs:
             print "No runs selected."                
 
