@@ -46,7 +46,6 @@ def start_SYGMA():
 
     #first_tab_style = {"border_radius":"0em 0.5em 0.5em 0.5em"}
     first_tab_style = {"border":"0.5em"}
-   
     #custom_imf_dir = os.environ["SYGMADIR"] + "/SYGMA_widget_imfs/"
     custom_imf_dir = "./SYGMA_widget_imfs/"
 
@@ -210,6 +209,7 @@ def start_SYGMA():
     frame.add_io_object("clear_plot")
     
     frame.add_display_object("species_group")
+    frame.add_display_object("plot_commands")
     frame.add_io_object("iso_or_elem")
     frame.add_io_object("iso_or_elem2")
     frame.add_io_object("species")
@@ -220,10 +220,10 @@ def start_SYGMA():
 
     # define relation between display widgets and children
     frame.set_state_children("widget", ["plot_page"], titles=["Plotting"])
-    frame.set_state_children("plot_page", ["plot_type", "plot_name", "source_over_plotting_group", "species_group", "elem_denom", "plot"])
-    frame.set_state_children("source_over_plotting_group", ["source", "over_plotting", "clear_plot"])
+    frame.set_state_children("plot_page", ["plot_type", "plot_name", "source_over_plotting_group", "species_group", "elem_denom","plot_commands"])
+    frame.set_state_children("source_over_plotting_group", ["source"])
     frame.set_state_children("species_group", ["iso_or_elem", "species"])
-    
+    frame.set_state_children("plot_commands", ["over_plotting", "clear_plot","plot"])    
     
     ###Custom IMF page###
     frame.add_display_object("custom_imf_page")
@@ -498,6 +498,7 @@ def start_SYGMA():
     frame.set_state_links("clear_plot_link", [("over_plotting", "visibility"),("clear_plot", "visibility")], directional=True) #changd value to visibiliy
     
     frame.set_state_attribute("species_group", ["plot_mass", "plot_mass_range"], visibility='visible', **group_style)
+    frame.set_state_attribute("plot_commands",visibility='visible', **group_style)
     frame.set_state_attribute("iso_or_elem",["plot_mass", "plot_mass_range","plot_spectro"], visibility='visible', description="species type: ", options=["Elements", "Isotopes"], selected_label="Elements")
     frame.set_state_attribute("iso_or_elem",["plot_totmasses","plot_spectro"], visibility='hidden', description="species type: ", options=["Elements", "Isotopes"], selected_label="Elements")
     frame.set_state_attribute("species",["plot_mass", "plot_mass_range"], visibility='visible', description="Element: ", options=elements_all, **text_box_style)
@@ -747,6 +748,7 @@ def start_SYGMA():
     frame.set_object("over_plotting", widgets.ToggleButton())
     frame.set_object("clear_plot", widgets.Button())
     frame.set_object("species_group", widgets.VBox())
+    frame.set_object("plot_commands", widgets.HBox())
     frame.set_object("iso_or_elem", widgets.RadioButtons())
     frame.set_object("iso_or_elem2", widgets.RadioButtons())
     frame.set_object("species", widgets.Select())
@@ -901,7 +903,6 @@ def start_SYGMA():
                 value = tuple(isotopes_all)
             frame.set_attributes("species_mult", value=value, selected_labels=value)
         frame.set_attributes("table_links", value="")
-   
 
     def get_table_handler(widget):
 

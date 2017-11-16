@@ -1,16 +1,17 @@
 import matplotlib
 import os
-
+import sys
+sys.path.append('/usr/local/bin/NuPyCEE')
 #temp fix
-if os.path.isdir("/home/nugrid/omega_sygma"):
-    os.environ["SYGMADIR"] = "/home/nugrid/omega_sygma"
+if os.path.isdir("/usr/local/bin/NuPyCEE"):
+    os.environ["SYGMADIR"] = "/usr/local/bin/NuPyCEE"
 
 import omega
 import stellab
 
 import widget_framework as framework
 from widget_utils import float_text, auto_styles
-from IPython.html import widgets
+import ipywidgets as widgets
 from IPython.display import display, clear_output
 from matplotlib import pyplot, colors
 
@@ -25,23 +26,26 @@ def start_OMEGA():
     elements_fornax = ['Mg', 'Si', 'Ca', 'Ti']
     
     line_styles=['-', '--', '-.', ':']
-    line_colors=['b', 'g', 'r', 'c', 'm', 'y', 'k']
+    line_colors=["k", "r", "b", "c", "m", "y"]#remove "g"
+    line_markers = ["o", "s", "x", "D", "v", "^", "<", ">", "p", "*", "+"]
     
     styles = auto_styles()
     styles.set_line_styles(line_styles)
     styles.set_line_colors(line_colors)
-    styles.set_line_markers([])
+    styles.set_line_markers(line_markers)
     
     color_convert = colors.ColorConverter()
     
     frame = framework.framework()
-    frame.set_default_display_style(padding="0.25em",background_color="white", border_color="LightGrey", border_radius="0.5em")
-    frame.set_default_io_style(padding="0.25em", margin="0.25em", border_color="LightGrey", border_radius="0.5em")
-    
-    group_style = {"border_style":"none", "border_radius":"0em"}
-    text_box_style = {"width":"10em"}
-    button_style = {"font_size":"1.25em", "font_weight":"bold"}
-    first_tab_style = {"border_radius":"0em 0.5em 0.5em 0.5em"}
+    #frame.set_default_display_style(padding="0.25em",background_color="white", border_color="LightGrey", border_radius="0.5em")
+    #frame.set_default_io_style(padding="0.25em", margin="0.25em", border_color="LightGrey", border_radius="0.5em")
+    frame.set_default_display_style(border="0.5em LightGrey")
+    frame.set_default_io_style(margin="0.25em", border="0.5em LightGrey")
+    #group_style = {"border_style":"none", "border_radius":"0em"}
+    group_style = {"border":"0em none","margin":" 0em 0em 0em 0em"}
+    text_box_style = {"width":"14em",'description_width':'initial'}
+    button_style = {"font_weight":"bold",'description_width':'initial'} #no fontsize
+    first_tab_style = {"border":"0.5em"}
     
     states = ["sculptor", "carina", "fornax"]
     
@@ -52,6 +56,7 @@ def start_OMEGA():
     frame.set_state_data("runs",[],"fornax")
     frame.set_state_data("styles", styles)
     frame.set_state_data("run_count", 0)
+    frame.set_state_data("old_state", None)
     
     def add_run(state, data, name):
         run_count = frame.get_state_data("run_count")
@@ -64,7 +69,7 @@ def start_OMEGA():
         widget_name = "runs_widget_#"+str(run_count)
         
         frame.add_io_object(widget_name)
-        frame.set_state_attribute(widget_name, state, visible=True, description=name)
+        frame.set_state_attribute(widget_name, state, visibility='visible', description=name)
         frame.set_object(widget_name, widgets.Checkbox())
         
         state_data.append((data, name, line_style, line_color, widget_name))
@@ -118,7 +123,7 @@ def start_OMEGA():
     frame.add_io_object("plot")
     frame.add_io_object("warning_msg")
     
-    frame.set_state_children("window", ["title", "widget"])
+    frame.set_state_children("window", ["title","widget"])
     frame.set_state_children("widget", ["simulation", "plotting_runs_group"])
     frame.set_state_children("simulation", tablist, titles=["Sculptor Galaxy", "Carina Galaxy", "Fornax Galaxy"])
     frame.set_state_children("sculptor", ["baryon_name_group", "loading_mass", "sn1a_pmil", "run_add_rm_group"])
@@ -130,45 +135,46 @@ def start_OMEGA():
     frame.set_state_children("plotting", ["plotting_title", "select_elem", "plot", "warning_msg"])
     frame.set_state_children("runs", ["runs_title"], state=states)
     
-    frame.set_state_attribute('window', visible=True, **group_style)
-    frame.set_state_attribute('title', visible=True, value="<center><h1>OMEGA</h1></center>")
-    frame.set_state_attribute('widget', visible=True, **group_style)
+    frame.set_state_attribute('window', visibility='visible', **group_style)
+    frame.set_state_attribute('title', visibility='visible', value="<center><h1>OMEGA</h1></center>")
+    frame.set_state_attribute('widget', visibility='visible', **group_style)
     
-    frame.set_state_attribute('simulation', visible=True, **group_style)
-    frame.set_state_attribute('sculptor', visible=True, **first_tab_style)
-    frame.set_state_attribute('carina', visible=True)
-    frame.set_state_attribute('fornax', visible=True)
+    frame.set_state_attribute('simulation', visibility='visible', **group_style)
+    frame.set_state_attribute('sculptor', visibility='visible', **first_tab_style)
+    frame.set_state_attribute('carina', visibility='visible')
+    frame.set_state_attribute('fornax', visibility='visible')
     
-    frame.set_state_attribute("baryon_name_group", visible=True, **group_style)
-    frame.set_state_attribute("f_baryon", visible=True, description="Baryon fraction: ", min=0.00005, max=0.1, step=0.00005)
+    frame.set_state_attribute("baryon_name_group", visibility='visible', **group_style)
+    frame.set_state_attribute("f_baryon", visibility='visible', description="Baryon fraction: ", min=0.00005, max=0.1, step=0.00005, **{'description_width': 'initial'})
     frame.set_state_attribute("f_baryon", "sculptor", value=0.001)
     frame.set_state_attribute("f_baryon", "carina", value=0.05)
     frame.set_state_attribute("f_baryon", "fornax", value=0.001)
-    frame.set_state_attribute("run_name", visible=True, description="Run name: ", placeholder="Enter name", **text_box_style)
+    frame.set_state_attribute("run_name", visibility='visible', description="Run name: ", placeholder="Enter name", **text_box_style)
     
-    frame.set_state_attribute("loading_mass", visible=True, description="Mass loading factor: ", **text_box_style)
+    frame.set_state_attribute("loading_mass", visibility='visible', description="Mass loading factor: ", **text_box_style)
     frame.set_state_attribute("loading_mass", ["sculptor", "carina"], value="10.0")
     frame.set_state_attribute("loading_mass", "fornax", value="4.0")
-    frame.set_state_attribute("sn1a_pmil", visible=True, description="SNe Ia per stellar mass formed: ", **text_box_style)
+    frame.set_state_attribute("sn1a_pmil", visibility='visible', description="SNe Ia per stellar mass formed: ", **{"width":"20em",'description_width': 'initial'} )
+    #frame.set_state_attribute("sn1a_pmil", visibility='visible', description="SNe Ia", **text_box_style)
     frame.set_state_attribute("sn1a_pmil", ["sculptor", "carina"], value="2.0e-3")
     frame.set_state_attribute("sn1a_pmil", "fornax", value="4.0e-3")
     
-    frame.set_state_attribute("run_add_rm_group", visible=True, **group_style)
-    frame.set_state_attribute("run_sim", visible=True, description="Run simulation", **button_style)
-    frame.set_state_attribute("rm_sim", visible=True, description="Remove selected run", **button_style)
+    frame.set_state_attribute("run_add_rm_group", visibility='visible', **group_style)
+    frame.set_state_attribute("run_sim", visibility='visible', description="Run simulation", **button_style)
+    frame.set_state_attribute("rm_sim", visibility='visible', description="Remove run", **button_style)
     
-    frame.set_state_attribute("plotting_runs_group", visible=True, **group_style)
-    frame.set_state_attribute("plotting", visible=True)
-    frame.set_state_attribute("plotting_title", visible=True, value="<h2>Plotting options</h2>", **group_style)
-    frame.set_state_attribute("runs", visible=True)
-    frame.set_state_attribute("runs_title", visible=True, value="<h2>Runs</h2>", **group_style)
+    frame.set_state_attribute("plotting_runs_group", visibility='visible', **group_style)
+    frame.set_state_attribute("plotting", visibility='visible')
+    frame.set_state_attribute("plotting_title", visibility='visible', value="<h3>Plotting options</h3>", **group_style)
+    frame.set_state_attribute("runs", visibility='visible')
+    frame.set_state_attribute("runs_title", visibility='visible', value="<h3>Runs</h3>", **group_style)
     
-    frame.set_state_attribute("select_elem", visible=True, description="Select Element: ", **text_box_style)
+    frame.set_state_attribute("select_elem", visibility='visible', description="Select Element: ", **text_box_style)
     frame.set_state_attribute("select_elem", "sculptor", options=elements_sculpt)
     frame.set_state_attribute("select_elem", "carina", options=elements_carina)
     frame.set_state_attribute("select_elem", "fornax", options=elements_fornax)
-    frame.set_state_attribute("plot", visible=True, description="Generate Plot", **button_style)
-    frame.set_state_attribute("warning_msg", visible=False, value="<h3>Error no runs selected!</h3>", **group_style)
+    frame.set_state_attribute("plot", visibility='visible', description="Generate Plot", **button_style)
+    frame.set_state_attribute("warning_msg", visibility='hidden', value="<h3>Error no runs selected!</h3>", **group_style)
     
     def loading_mass_handler(name, value):
         if (value.strip())[0] == "-":
@@ -206,16 +212,19 @@ def start_OMEGA():
         frame.update()
     
     def sel_tab(name, value):
-        clear_output()
+
+        clear_output(wait=True)
         pyplot.close("all")
+        
         open_tab = tablist[value]
         frame.set_state(open_tab)
         frame.set_attributes("run_name", value="")
-        frame.update()
+        display(frame._object_list['window']) #CR
         
     def generate_plot(widget):
-        clear_output()
+        clear_output(wait=True)
         pyplot.close("all")
+        display(frame._object_list['window']) #CR
         state = frame.get_state()
         data = frame.get_state_data("runs", state)
         
@@ -251,7 +260,7 @@ def start_OMEGA():
             #pyplot.legend(loc='center left', bbox_to_anchor=(1.01, 0.5), markerscale=0.8, fontsize=12)
             
             if plotted_data:
-                frame.set_attributes("warning_msg", visible=False)
+                frame.set_attributes("warning_msg", visibility='hidden')
                 if state=="sculptor":
                     pyplot.ylim(-1.0,1.6)
                     pyplot.xlim(-4.0, -0.5)
@@ -268,10 +277,12 @@ def start_OMEGA():
                 pyplot.legend(loc='center left', bbox_to_anchor=(1.01, 0.5), prop={'size':12})
                 pyplot.show()
             else:
-                frame.set_attributes("warning_msg", visible=True, value="<h3>Error no runs selected!</h3>")
+                frame.set_attributes("warning_msg", visibility='visible', value="<h3>Error no runs selected!</h3>")
                 
         else:
-            frame.set_attributes("warning_msg", visible=True, value="<h3>Error no run data!</h3>")
+            frame.set_attributes("warning_msg", visibility='visible', value="<h3>Error no run data!</h3>")
+        
+        
         
     frame.set_state_callbacks("loading_mass", loading_mass_handler)
     frame.set_state_callbacks("sn1a_pmil", sn1a_pmil_handler)
@@ -280,13 +291,13 @@ def start_OMEGA():
     frame.set_state_callbacks("simulation", sel_tab, "selected_index")
     frame.set_state_callbacks("plot", generate_plot, attribute=None, type="on_click")
     
-    frame.set_object("window", widgets.Box())
+    frame.set_object("window", widgets.VBox())
     frame.set_object("title", widgets.HTML())
     frame.set_object("widget", widgets.VBox())
     frame.set_object("simulation", widgets.Tab())
-    frame.set_object("sculptor", widgets.Box())
-    frame.set_object("carina", widgets.Box())
-    frame.set_object("fornax", widgets.Box())
+    frame.set_object("sculptor", widgets.VBox())
+    frame.set_object("carina", widgets.VBox())
+    frame.set_object("fornax", widgets.VBox())
     
     frame.set_object("baryon_name_group", widgets.HBox())
     frame.set_object("f_baryon", widgets.FloatSlider())
@@ -296,8 +307,8 @@ def start_OMEGA():
     frame.set_object("sn1a_pmil", widgets.Text())
     
     frame.set_object("run_add_rm_group", widgets.HBox())
-    frame.set_object("run_sim", widgets.Button())
-    frame.set_object("rm_sim", widgets.Button())
+    frame.set_object("run_sim", widgets.Button(button_style = 'info'))
+    frame.set_object("rm_sim", widgets.Button(button_style = 'info'))
     
     frame.set_object("plotting_runs_group", widgets.HBox())
     frame.set_object("plotting", widgets.VBox())
@@ -310,11 +321,12 @@ def start_OMEGA():
     frame.set_object("warning_msg", widgets.HTML())
 
     ##start widget##
+    
     frame.display_object("window")
     tab_index = frame.get_attribute("simulation", "selected_index")
     sel_tab("selected_index", tab_index)
 
-
+'''
 def start_test_with_alpha_elements():
     yield_table_names = ["NuGrid raw", "NuGrid 25Mo Nomoto 2006", "NuGrid 30Mo Nomoto 2006", "NuGrid 40Mo Nomoto 2006"]
     yield_tables = {"NuGrid raw":'yield_tables/isotope_yield_table.txt', 
@@ -334,13 +346,20 @@ def start_test_with_alpha_elements():
     color_convert = colors.ColorConverter()
     
     frame = framework.framework()
-    frame.set_default_display_style(padding="0.25em",background_color="white", border_color="LightGrey", border_radius="0.5em")
-    frame.set_default_io_style(padding="0.25em", margin="0.25em", border_color="LightGrey", border_radius="0.5em")
+    frame.set_default_display_style(border="0.5em LightGrey")
+    frame.set_default_io_style(margin="0.25em", border="0.5em LightGrey")
+    #frame.set_default_display_style(padding="0.25em",background_color="white", border_color="LightGrey", border_radius="0.5em")
+    #frame.set_default_io_style(padding="0.25em", margin="0.25em", border_color="LightGrey", border_radius="0.5em")
     
-    group_style = {"border_style":"none", "border_radius":"0em"}
-    text_box_style = {"width":"10em"}
-    button_style = {"font_size":"1.25em", "font_weight":"bold"}
-    first_tab_style = {"border_radius":"0em 0.5em 0.5em 0.5em"}
+    group_style = {"border":"0em none","margin":" 0em 0em 0em 0em"}
+
+    # width: width of input fields e.g. for Total stellar time
+    text_box_style = {"width":"14em",'description_width':'initial'}
+    #button_style = {"font_size":"1.25em", "font_weight":"bold"}
+    button_style = {"font_weight":"bold",'description_width':'initial'} #no fontsize
+
+    #first_tab_style = {"border_radius":"0em 0.5em 0.5em 0.5em"}
+    first_tab_style = {"border":"0.5em"}
     
     frame.set_state_data("runs",[])
     frame.set_state_data("styles", styles)
@@ -349,18 +368,18 @@ def start_test_with_alpha_elements():
     def add_run(data, name):
         run_count = frame.get_state_data("run_count")
         state_data = frame.get_state_data("runs")
-        styles = frame.get_state_data("styles")
-        style = styles.get_style()
-        line_color = style["color"]
-        line_style = style["shape"]
+        #styles = frame.get_state_data("styles")
+        #style = styles.get_style()
+        #line_color = style["color"]
+        #line_style = style["shape"]
         
         widget_name = "runs_widget_#"+str(run_count)
         
         frame.add_io_object(widget_name)
-        frame.set_state_attribute(widget_name, visible=True, description=name)
+        frame.set_state_attribute(widget_name, visibility='visible', description=name)
         frame.set_object(widget_name, widgets.Checkbox())
         
-        state_data.append((data, name, line_style, line_color, widget_name))
+        state_data.append((data, name,widget_name))# line_style, line_color, widget_name))
         
         frame.set_state_children("runs", [widget_name])
         frame.set_state_data("runs", state_data)
@@ -414,30 +433,30 @@ def start_test_with_alpha_elements():
     frame.set_state_children("plotting", ["plotting_title", "select_elem", "plot", "warning_msg"])
     frame.set_state_children("runs", ["runs_title"])
     
-    frame.set_state_attribute('window', visible=True, **group_style)
-    frame.set_state_attribute('title', visible=True, value="<center><h1>Test with Alpha elements</h1><center>")
-    frame.set_state_attribute('widget', visible=True, **group_style)
+    frame.set_state_attribute('window', visibility='visible', **group_style)
+    frame.set_state_attribute('title', visibility='visible', value="<center><h1>Test with Alpha elements</h1><center>")
+    frame.set_state_attribute('widget', visibility='visible', **group_style)
     
-    frame.set_state_attribute('simulation', visible=True)
+    frame.set_state_attribute('simulation', visibility='visible')
     
-    frame.set_state_attribute("table_name_group", visible=True, **group_style)
-    frame.set_state_attribute("select_table", visible=True, description="Yield table: ", options=yield_table_names)
-    frame.set_state_attribute("run_name", visible=True, description="Run name: ", placeholder="Enter name", **text_box_style)
+    frame.set_state_attribute("table_name_group", visibility='visible', **group_style)
+    frame.set_state_attribute("select_table", visibility='visible', description="Yield table: ", options=yield_table_names)
+    frame.set_state_attribute("run_name", visibility='visible', description="Run name: ", placeholder="Enter name", **text_box_style)
     
-    frame.set_state_attribute("run_add_rm_group", visible=True, **group_style)
-    frame.set_state_attribute("run_sim", visible=True, description="Run simulation", **button_style)
-    frame.set_state_attribute("rm_sim", visible=True, description="Remove selected run", **button_style)
+    frame.set_state_attribute("run_add_rm_group", visibility='visible', **group_style)
+    frame.set_state_attribute("run_sim", visibility='visible', description="Run simulation", **button_style)
+    frame.set_state_attribute("rm_sim", visibility='visible', description="Remove selected run", **button_style)
     
-    frame.set_state_attribute("plotting_runs_group", visible=True, **group_style)
-    frame.set_state_attribute("plotting", visible=True)
-    frame.set_state_attribute("plotting_title", visible=True, value="<h2>Plotting options</h2>", **group_style)
-    frame.set_state_attribute("runs", visible=True)
-    frame.set_state_attribute("runs_title", visible=True, value="<h2>Runs</h2>", **group_style)
+    frame.set_state_attribute("plotting_runs_group", visibility='visible', **group_style)
+    frame.set_state_attribute("plotting", visibility='visible')
+    frame.set_state_attribute("plotting_title", visibility='visible', value="<h2>Plotting options</h2>", **group_style)
+    frame.set_state_attribute("runs", visibility='visible')
+    frame.set_state_attribute("runs_title", visibility='visible', value="<h2>Runs</h2>", **group_style)
     
-    frame.set_state_attribute("select_elem", visible=True, description="Select Element: ", **text_box_style)
+    frame.set_state_attribute("select_elem", visibility='visible', description="Select Element: ", **text_box_style)
     frame.set_state_attribute("select_elem", options=elements)
-    frame.set_state_attribute("plot", visible=True, description="Generate Plot", **button_style)
-    frame.set_state_attribute("warning_msg", visible=False, value="<h3>Error no runs selected!</h3>", **group_style)
+    frame.set_state_attribute("plot", visibility='visible', description="Generate Plot", **button_style)
+    frame.set_state_attribute("warning_msg", visibility='hidden', value="<h3>Error no runs selected!</h3>", **group_style)
     
     def loading_mass_handler(name, value):
         if (value.strip())[0] == "-":
@@ -449,6 +468,7 @@ def start_test_with_alpha_elements():
     
     def simulation_run(widget):
         run_count = frame.get_state_data("run_count")
+        print(run_count)
         run_count += 1
         data = None
         name = frame.get_attribute("run_name", "value")
@@ -502,7 +522,7 @@ def start_test_with_alpha_elements():
                         comp_data=False
             
             if plotted_data:
-                frame.set_attributes("warning_msg", visible=False)
+                frame.set_attributes("warning_msg", visibility='hidden')
                 pyplot.ylim(-0.5,1.4)
             
                 matplotlib.rcParams.update({'font.size': 14})
@@ -511,10 +531,10 @@ def start_test_with_alpha_elements():
                 pyplot.legend(loc='center left', bbox_to_anchor=(1.01, 0.5), prop={'size':12})
                 pyplot.show()
             else:
-                frame.set_attributes("warning_msg", visible=True, value="<h3>Error no runs selected!</h3>")
+                frame.set_attributes("warning_msg", visibility='visible', value="<h3>Error no runs selected!</h3>")
                 
         else:
-            frame.set_attributes("warning_msg", visible=True, value="<h3>Error no run data!</h3>")
+            frame.set_attributes("warning_msg", visibility='visible', value="<h3>Error no run data!</h3>")
         
     frame.set_state_callbacks("run_sim", simulation_run, attribute=None, type="on_click")
     frame.set_state_callbacks("rm_sim", remove_simulation, attribute=None, type="on_click")
@@ -542,6 +562,6 @@ def start_test_with_alpha_elements():
     frame.set_object("select_elem", widgets.Dropdown()) 
     frame.set_object("plot", widgets.Button()) 
     frame.set_object("warning_msg", widgets.HTML())
-
     ##start widget##
     frame.display_object("window")
+   '''

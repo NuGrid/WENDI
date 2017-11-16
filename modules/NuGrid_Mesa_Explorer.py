@@ -1,22 +1,25 @@
 import threading
 import widget_framework as framework
 from widget_utils import int_text, token_text
-from IPython.html import widgets
+import ipywidgets as widgets
 from IPython.display import display, clear_output
 from matplotlib import pyplot
-import nugridse as mp
-import mesa as ms
+import nugridpy.nugridse as mp
+import nugridpy.mesa as ms
 import os
 
 def start_explorer(global_namespace, manual_data_select=False, dir="./"):
     frame = framework.framework()
-    frame.set_default_display_style(padding="0.25em",background_color="white", border_color="LightGrey", border_radius="0.5em")
-    frame.set_default_io_style(padding="0.25em", margin="0.25em", border_color="LightGrey", border_radius="0.5em")
+    #frame.set_default_display_style(padding="0.25em",background_color="white", border_color="LightGrey", border_radius="0.5em")
+    #frame.set_default_io_style(padding="0.25em", margin="0.25em", border_color="LightGrey", border_radius="0.5em")
+    frame.set_default_display_style(border="0.5em LightGrey")
+    frame.set_default_io_style(margin="0.25em", border="0.5em LightGrey")
 
-    group_style = {"border_style":"none", "border_radius":"0em", "width":"100%"}
+    #group_style = {"border_style":"none", "border_radius":"0em", "width":"100%"}
+    group_style = {"border":"0em none","margin":" 0em 0em 0em 0em"}
     text_box_style = {"width":"10em"}
     button_style = {"font_size":"1.25em", "font_weight":"bold"}
-    first_tab_style = {"border_radius":"0em 0.5em 0.5em 0.5em"}
+    first_tab_style = {"margin":"0em 0.5em 0.5em 0.5em"}
 
     states_movie = ["movie", "movie_iso_abund", "movie_abu_chart"]
     states_nugrid = ["nugrid", "nugrid_w_data", "nugrid_get_data", "iso_abund", "abu_chart", "nugrid_plot"]+states_movie
@@ -137,23 +140,23 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
 
     frame.set_state_data("class_instance", None)
 
-    frame.set_state_attribute('window', visible=True, **group_style)
-    frame.set_state_attribute('Title', visible=True, value = "<center><h1>NuGrid Set explorer</h1></center><p><center>This explorer allows you to investigate NuGrid stellar evolution and yields data sets.</center></p>")
-    frame.set_state_attribute('widget', visible=True, **group_style)
+    frame.set_state_attribute('window', visibility='visible', **group_style)
+    frame.set_state_attribute('Title', visibility='visible', value = "<center><h1>NuGrid Set explorer</h1></center><p><center>This explorer allows you to investigate NuGrid stellar evolution and yields data sets.</center></p>")
+    frame.set_state_attribute('widget', visibility='visible', **group_style)
 
-    frame.set_state_attribute("page_data", visible=True, **first_tab_style)
+    frame.set_state_attribute("page_data", visibility='visible', **first_tab_style)
     frame.set_state_attribute('mass', visible=not manual_data_select, description="Mass: ", options=["1.0", "1.65", "2.0", "3.0", "4.0", "5.0", "6.0", "7.0", "12.0", "15.0", "20.0", "25.0", "32.0", "60.0"], selected_label="2.0")
     frame.set_state_attribute('Z', visible=not manual_data_select, description="Z: ", options=["1E-4", "1E-3", "6E-3", "1E-2", "2E-2"])
     frame.set_state_attribute("address_bar", visible=manual_data_select)
     frame.set_state_attribute("directory_list", visible=manual_data_select)
-    frame.set_state_attribute("select_nugrid_mesa", visible=True, description="Select NuGrid or Mesa: ", options=["", "NuGrid", "Mesa"])
-    frame.set_state_attribute("contain_module_load", visible=True, **group_style)
-    frame.set_state_attribute("select_module", visible=True, description="Select data type: ", disabled=True)
+    frame.set_state_attribute("select_nugrid_mesa", visibility='visible', description="Select NuGrid or Mesa: ", options=["", "NuGrid", "Mesa"])
+    frame.set_state_attribute("contain_module_load", visibility='visible', **group_style)
+    frame.set_state_attribute("select_module", visibility='visible', description="Select data type: ", disabled=True)
+    
+    frame.set_state_attribute("contain_model_select")# border_style="none", padding="0px", margin="0px", width="18em")
+    frame.set_state_attribute("model_select", visibility='visible', description="Select model: ", placeholder="1", **text_box_style)
 
-    frame.set_state_attribute("contain_model_select", border_style="none", padding="0px", margin="0px", width="18em")
-    frame.set_state_attribute("model_select", visible=True, description="Select model: ", placeholder="1", **text_box_style)
-
-    frame.set_state_attribute("load_data", visible=True, description="Load Data", disabled=True, **button_style)
+    frame.set_state_attribute("load_data", visibility='visible', description="Load Data", disabled=True, **button_style)
 
     ###NUGRID###
     frame.set_state_attribute("select_module", states_nugrid, options=["", "H5 out"], disabled=False)
@@ -264,8 +267,8 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
     def change_module(widget, value):
         if value == "History":
             frame.set_state_attribute("select_plot", states_mesa[1:], options={"":"mesa_w_data", "HR-Diagram":"hrd", "Plot":"plot", "Kippenhahn":"kippenhahn", "Kippenhahan contour":"kip_cont", "TCRhoC plot":"tcrhoc", "Get data":"get_data"})
-            frame.set_state_attribute("contain_model_select", states_mesa, visible=False)
-            frame.set_attributes("contain_model_select", visible=False)
+            frame.set_state_attribute("contain_model_select", states_mesa, visibility='hidden')
+            frame.set_attributes("contain_model_select", visibility='hidden')
         elif value == "Profile":
             frame.set_attributes("load_data", disabled=True)
             frame.set_state_attribute("select_plot", states_mesa[1:], options={"":"mesa_w_data", "Plot":"plot", "Get data":"get_data"})
@@ -288,13 +291,13 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
                     mmodel = pre_data.model
                     frame.set_state_data("model_data", (mass, Z, mmodel))
 
-            frame.set_state_attribute("contain_model_select", states_mesa, visible=True)
-            frame.set_attributes("contain_model_select", visible=True)
+            frame.set_state_attribute("contain_model_select", states_mesa, visibility='visible')
+            frame.set_attributes("contain_model_select", visibility='visible')
             frame.set_attributes("model_select", value=str(mmodel[-1]))
             frame.set_attributes("load_data", disabled=False)
         else:
-            frame.set_state_attribute("contain_model_select", states_mesa, visible=False)
-            frame.set_attributes("contain_model_select", visible=False)
+            frame.set_state_attribute("contain_model_select", states_mesa, visibility='hidden')
+            frame.set_attributes("contain_model_select", visibility='hidden')
 
     frame.set_state_callbacks("model_select", model_select_handler)
     frame.set_state_callbacks("mass", mass_Z_handler)
@@ -324,56 +327,56 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
 
 
     ###Plotting page###
-    frame.set_state_attribute('page_plotting', visible=True)
+    frame.set_state_attribute('page_plotting', visibility='visible')
 
-    frame.set_state_attribute("select_plot", visible=True, description="Select plot type: ", disabled=True)
+    frame.set_state_attribute("select_plot", visibility='visible', description="Select plot type: ", disabled=True)
     frame.set_state_attribute("select_plot", states_nugrid[1:], options={"":"nugrid_w_data", "Isotope abundance":"iso_abund", "Abundance chart":"abu_chart", "Movie":"movie", "Plot":"nugrid_plot", "Get data":"nugrid_get_data"}, disabled=False)
     frame.set_state_attribute("select_plot", states_mesa[1:], options={"":"mesa_w_data", "HR-Diagram":"hrd", "Plot":"plot", "Kippenhahn":"kippenhahn", "Kippenhahan contour":"kip_cont", "TCRhoC":"tcrhoc", "Get data":"nugrid_get_data"}, disabled=False)
 
-    frame.set_state_attribute('warning_msg', visible=True, value="<h3>Error: No data loaded!</h3>", **group_style)
+    frame.set_state_attribute('warning_msg', visibility='visible', value="<h3>Error: No data loaded!</h3>", **group_style)
     frame.set_state_attribute("warning_msg", ["nugrid_w_data", "mesa_w_data"], value="<h2>Select plot.</h2>")
-    frame.set_state_attribute("warning_msg", states_plotting + ["get_data", "nugrid_get_data"], visible=False)
+    frame.set_state_attribute("warning_msg", states_plotting + ["get_data", "nugrid_get_data"], visibility='hidden')
 
     frame.set_state_attribute("plot_name", **group_style)
-    frame.set_state_attribute('plot_name', "iso_abund", visible=True, value="<h2>Isotope abundance</h2>")
-    frame.set_state_attribute('plot_name', "abu_chart", visible=True, value="<h2>Abundance chart</h2>")
-    frame.set_state_attribute('plot_name', states_movie, visible=True, value="<h2>Movie</h2>")
-    frame.set_state_attribute('plot_name', "hrd", visible=True, value="<h2>HR-Diagram</h2>")
-    frame.set_state_attribute('plot_name', ["plot", "nugrid_plot"], visible=True, value="<h2>Plot</h2>")
-    frame.set_state_attribute('plot_name', "kippenhahn", visible=True, value="<h2>Kippenhahn</h2>")
-    frame.set_state_attribute('plot_name', "kip_cont", visible=True, value="<h2>Kippenhahn contour</h2>")
-    frame.set_state_attribute('plot_name', "tcrhoc", visible=True, value="<h2>Central temperature vs central density</h2>")
-    frame.set_state_attribute('plot_name', ["get_data", "nugrid_get_data"], visible=True, value="<h2>Get data</h2>")
+    frame.set_state_attribute('plot_name', "iso_abund", visibility='visible', value="<h2>Isotope abundance</h2>")
+    frame.set_state_attribute('plot_name', "abu_chart", visibility='visible', value="<h2>Abundance chart</h2>")
+    frame.set_state_attribute('plot_name', states_movie, visibility='visible', value="<h2>Movie</h2>")
+    frame.set_state_attribute('plot_name', "hrd", visibility='visible', value="<h2>HR-Diagram</h2>")
+    frame.set_state_attribute('plot_name', ["plot", "nugrid_plot"], visibility='visible', value="<h2>Plot</h2>")
+    frame.set_state_attribute('plot_name', "kippenhahn", visibility='visible', value="<h2>Kippenhahn</h2>")
+    frame.set_state_attribute('plot_name', "kip_cont", visibility='visible', value="<h2>Kippenhahn contour</h2>")
+    frame.set_state_attribute('plot_name', "tcrhoc", visibility='visible', value="<h2>Central temperature vs central density</h2>")
+    frame.set_state_attribute('plot_name', ["get_data", "nugrid_get_data"], visibility='visible', value="<h2>Get data</h2>")
 
-    frame.set_state_attribute("variable_name", ["get_data", "nugrid_get_data"], visible=True, description="Variable name: ", placeholder="Enter name.", **text_box_style)
+    frame.set_state_attribute("variable_name", ["get_data", "nugrid_get_data"], visibility='visible', description="Variable name: ", placeholder="Enter name.", **text_box_style)
 
-    frame.set_state_attribute('movie_type', states_movie, visible=True, description="Movie Type: ", options={"":"movie", "Isotope abundance":"movie_iso_abund", "Abundance chart":"movie_abu_chart"})
-    frame.set_state_attribute('cycle_sparsity_group', states_nugrid[1:] + states_mesa[1:] + states_movie, visible=True, **group_style)
-    frame.set_state_attribute('cycle', ["iso_abund", "abu_chart", "nugrid_plot", "nugrid_get_data"], visible=True, description="cycle: ")
-    frame.set_state_attribute('cycle_range', states_movie[1:], visible=True)
-    frame.set_state_attribute('sparsity', states_movie[1:], visible=True, description="Sparsity: ", value="1", **text_box_style)
+    frame.set_state_attribute('movie_type', states_movie, visibility='visible', description="Movie Type: ", options={"":"movie", "Isotope abundance":"movie_iso_abund", "Abundance chart":"movie_abu_chart"})
+    frame.set_state_attribute('cycle_sparsity_group', states_nugrid[1:] + states_mesa[1:] + states_movie, visibility='visible', **group_style)
+    frame.set_state_attribute('cycle', ["iso_abund", "abu_chart", "nugrid_plot", "nugrid_get_data"], visibility='visible', description="cycle: ")
+    frame.set_state_attribute('cycle_range', states_movie[1:], visibility='visible')
+    frame.set_state_attribute('sparsity', states_movie[1:], visibility='visible', description="Sparsity: ", value="1", **text_box_style)
 
-    frame.set_state_attribute('xax', ["plot", "nugrid_plot", "get_data", "nugrid_get_data"], visible=True, **group_style)
-    frame.set_state_attribute('xaxis', visible=True, description="select X-axis: ")
+    frame.set_state_attribute('xax', ["plot", "nugrid_plot", "get_data", "nugrid_get_data"], visibility='visible', **group_style)
+    frame.set_state_attribute('xaxis', visibility='visible', description="select X-axis: ")
     frame.set_state_attribute('xaxis', ["get_data", "nugrid_get_data"], description="select data: ")
-    frame.set_state_attribute('logx', visible=True, description="log X-axis: ")
-    frame.set_state_attribute('logx', ["get_data", "nugrid_get_data"], visible=False)
-    frame.set_state_attribute('yax', ["plot", "nugrid_plot"], visible=True, **group_style)
-    frame.set_state_attribute('yaxis', visible=True, description="select Y-axis: ")
-    frame.set_state_attribute('logy', visible=True, description="log Y-axis: ")
+    frame.set_state_attribute('logx', visibility='visible', description="log X-axis: ")
+    frame.set_state_attribute('logx', ["get_data", "nugrid_get_data"], visibility='hidden')
+    frame.set_state_attribute('yax', ["plot", "nugrid_plot"], visibility='visible', **group_style)
+    frame.set_state_attribute('yaxis', visibility='visible', description="select Y-axis: ")
+    frame.set_state_attribute('logy', visibility='visible', description="log Y-axis: ")
 
-    frame.set_state_attribute("mass_settings", ["iso_abund", "abu_chart"]+states_movie[1:], visible=True, **group_style)
-    frame.set_state_attribute("set_amass", ["iso_abund", "movie_iso_abund"], visible=True, description="Set atomic mass: ")
+    frame.set_state_attribute("mass_settings", ["iso_abund", "abu_chart"]+states_movie[1:], visibility='visible', **group_style)
+    frame.set_state_attribute("set_amass", ["iso_abund", "movie_iso_abund"], visibility='visible', description="Set atomic mass: ")
     frame.set_state_attribute("amass_range", ["iso_abund", "movie_iso_abund"], description="Atomi mass range: ", min=0, max=211, value=(0, 211))
-    frame.set_state_attribute("set_mass", ["iso_abund", "abu_chart"]+states_movie[1:], visible=True, description="Set mass: ")
+    frame.set_state_attribute("set_mass", ["iso_abund", "abu_chart"]+states_movie[1:], visibility='visible', description="Set mass: ")
     frame.set_state_attribute("mass_range", ["iso_abund", "abu_chart"]+states_movie[1:], description="Mass range: ")
-    frame.set_state_attribute("lbound", "abu_chart", visible=True, description="lbound", min=-12, max=0, step=0.05, value=(-12, 0))
+    frame.set_state_attribute("lbound", "abu_chart", visibility='visible', description="lbound", min=-12, max=0, step=0.05, value=(-12, 0))
 
     frame.set_state_links("amass_link", [("set_amass", "value"), ("amass_range", "visible")], ["iso_abund", "movie_iso_abund"], True)
     frame.set_state_links("mass_link", [("set_mass", "value"), ("mass_range", "visible")], ["iso_abund", "abu_chart"]+states_movie[1:], True)
 
-    frame.set_state_attribute("lim_settings" , ["iso_abund", "abu_chart", "kip_cont", "tcrhoc"]+states_movie[1:], visible=True, **group_style)
-    frame.set_state_attribute("set_lims", ["iso_abund", "abu_chart", "kip_cont", "tcrhoc"]+states_movie[1:], visible=True, description="Set axis limits: ")
+    frame.set_state_attribute("lim_settings" , ["iso_abund", "abu_chart", "kip_cont", "tcrhoc"]+states_movie[1:], visibility='visible', **group_style)
+    frame.set_state_attribute("set_lims", ["iso_abund", "abu_chart", "kip_cont", "tcrhoc"]+states_movie[1:], visibility='visible', description="Set axis limits: ")
     frame.set_state_attribute("xlim", ["abu_chart", "movie_abu_chart", "kip_cont"], description="x-axis limits: ", min=0, max=130, value=(0, 130), step=0.5)
     frame.set_state_attribute("xlim", "tcrhoc", description="x-axis limits: ", min=3.0, max=10.0, value=(3.0, 10.0), step=0.5)
     frame.set_state_attribute("ylim", ["iso_abund", "abu_chart", "kip_cont", "tcrhoc"]+states_movie[1:], description="y-axis limits: ")
@@ -381,32 +384,32 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
     frame.set_state_attribute("ylim", ["abu_chart", "movie_abu_chart"], min=0, max=130, value=(0, 130), step=0.5)
     frame.set_state_attribute("ylim", "kip_cont", min=0, max=1, value=(0, 1), step=0.005)#mass
     frame.set_state_attribute("ylim", "tcrhoc", min=8.0, max=10.0, value=(8.0, 10.0), step=0.5)
-    frame.set_state_attribute("ixaxis", "kip_cont", visible=True, description="X axis format: ", options={"Log time":"log_time_left", "Age":"age", "Model number":"model_number"}, value="model_number")
+    frame.set_state_attribute("ixaxis", "kip_cont", visibility='visible', description="X axis format: ", options={"Log time":"log_time_left", "Age":"age", "Model number":"model_number"}, value="model_number")
 
     frame.set_state_links("xlims_link", [("set_lims", "value"), ("xlim", "visible")], ["abu_chart", "movie_abu_chart", "kip_cont", "tcrhoc"], True)
     frame.set_state_links("ylims_link", [("set_lims", "value"), ("ylim", "visible")], ["iso_abund", "abu_chart", "kip_cont", "tcrhoc"]+states_movie[1:], True)
 
-    frame.set_state_attribute("xres", "kip_cont", visible=True, description="x resolution: ", placeholder="1000", **text_box_style)
-    frame.set_state_attribute("yres", "kip_cont", visible=True, description="y resolution: ", placeholder="1000", **text_box_style)
+    frame.set_state_attribute("xres", "kip_cont", visibility='visible', description="x resolution: ", placeholder="1000", **text_box_style)
+    frame.set_state_attribute("yres", "kip_cont", visibility='visible', description="y resolution: ", placeholder="1000", **text_box_style)
 
     frame.set_state_links("xres_link", [("set_lims", "value"), ("xres", "visible")], "kip_cont", True)
     frame.set_state_links("yres_link", [("set_lims", "value"), ("yres", "visible")], "kip_cont", True) 
 
-    frame.set_state_attribute("abu_settings", ["abu_chart", "movie_abu_chart"], visible=True, **group_style)
-    frame.set_state_attribute("ilabel", ["abu_chart", "movie_abu_chart"], visible=True, description="Element label")
-    frame.set_state_attribute("imlabel", ["abu_chart", "movie_abu_chart"], visible=True, description="Isotope label")
-    frame.set_state_attribute("imagic", ["abu_chart", "movie_abu_chart"], visible=True, description="Magic numbers")
+    frame.set_state_attribute("abu_settings", ["abu_chart", "movie_abu_chart"], visibility='visible', **group_style)
+    frame.set_state_attribute("ilabel", ["abu_chart", "movie_abu_chart"], visibility='visible', description="Element label")
+    frame.set_state_attribute("imlabel", ["abu_chart", "movie_abu_chart"], visibility='visible', description="Isotope label")
+    frame.set_state_attribute("imagic", ["abu_chart", "movie_abu_chart"], visibility='visible', description="Magic numbers")
 
-    frame.set_state_attribute("kipp_settings", ["kippenhahn", "kip_cont"], visible=True, **group_style)
-    frame.set_state_attribute("plot_star_mass", "kippenhahn", visible=True, description="Plot star mass: ")
-    frame.set_state_attribute("plot_c12border", ["kippenhahn", "kip_cont"], visible=True, description="Show C-12 Border: ")
-    frame.set_state_attribute("plot_engminus", "kip_cont", visible=True, description="Energy generation contours (eps_nuc>0): ")
-    frame.set_state_attribute("plot_engplus", "kip_cont", visible=True, description="Energy generation contours (eos_nuc<0): ")
+    frame.set_state_attribute("kipp_settings", ["kippenhahn", "kip_cont"], visibility='visible', **group_style)
+    frame.set_state_attribute("plot_star_mass", "kippenhahn", visibility='visible', description="Plot star mass: ")
+    frame.set_state_attribute("plot_c12border", ["kippenhahn", "kip_cont"], visibility='visible', description="Show C-12 Border: ")
+    frame.set_state_attribute("plot_engminus", "kip_cont", visibility='visible', description="Energy generation contours (eps_nuc>0): ")
+    frame.set_state_attribute("plot_engplus", "kip_cont", visibility='visible', description="Energy generation contours (eos_nuc<0): ")
 
-    frame.set_state_attribute("stable", "iso_abund", visible=True, description="stable: ")
+    frame.set_state_attribute("stable", "iso_abund", visibility='visible', description="stable: ")
 
-    frame.set_state_attribute('generate_plot', states_plotting, visible=True, description="Generate Plot", **button_style)
-    frame.set_state_attribute('generate_plot', ["get_data", "nugrid_get_data"], visible=True, description="Get Data", **button_style)
+    frame.set_state_attribute('generate_plot', states_plotting, visibility='visible', description="Generate Plot", **button_style)
+    frame.set_state_attribute('generate_plot', ["get_data", "nugrid_get_data"], visibility='visible', description="Get Data", **button_style)
 
     def variable_name_full_validation(value):
         frame.set_attributes("variable_name", value=token_text(value, strict=True))
