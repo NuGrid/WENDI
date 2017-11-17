@@ -178,13 +178,17 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
             if manual_data_select:
                 mdir, mmodel = frame.get_state_data("model_data")
                 if (mdir != dir) or (mmodel == None):
-                    clear_output()
+                    clear_output(wait=True)
+                    pyplot.close('all')
+                    display(frame._object_list['window']) #CR
                     pre_data = ms.mesa_profile(dir)
                     frame.set_state_data("model_data", (dir, pre_data.model))
             else:
                 mmass, mZ, mmodel = frame.get_state_data("model_data")
                 if (mmass != mass) or (mZ != Z) or (mmodel == None):
-                    clear_output()
+                    clear_output(wait=True)
+                    pyplot.close('all')
+                    display(frame._object_list['window']) #CR
                     pre_data = ms.mesa_profile(mass=mass, Z=Z)
                     frame.set_state_data("model_data", (mass, Z, pre_data.model))
 
@@ -218,7 +222,9 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
             frame.set_state("default")
 
     def load(widget):
-        clear_output()
+        clear_output(wait=True)
+        pyplot.close('all')
+        display(frame._object_list['window']) #CR
         data = None
         mass = float(frame.get_attribute("mass", "value"))
         Z = float(frame.get_attribute("Z", "value"))
@@ -279,14 +285,18 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
             if manual_data_select:
                 mdir, mmodel = frame.get_state_data("model_data")
                 if (mdir != dir) or (mmodel == None):
-                    clear_output()
+                    clear_output(wait=True)
+                    pyplot.close('all')
+                    display(frame._object_list['window']) #CR
                     pre_data = ms.mesa_profile(dir)
                     mmodel = pre_data.model
                     frame.set_state_data("model_data", (dir, mmodel))
             else:
                 mmass, mZ, mmodel = frame.get_state_data("model_data")
                 if (mmass != mass) or (mZ != Z) or (mmodel == None):
-                    clear_output()
+                    clear_output(wait=True)
+                    pyplot.close('all')
+                    display(frame._object_list['window']) #CR
                     pre_data = ms.mesa_profile(mass=mass, Z=Z)
                     mmodel = pre_data.model
                     frame.set_state_data("model_data", (mass, Z, mmodel))
@@ -308,7 +318,7 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
     frame.set_state_callbacks("select_module", change_module)
     frame.set_state_callbacks("load_data", load, attribute=None, type="on_click")
 
-    frame.set_object("window", widgets.Box())
+    frame.set_object("window", widgets.VBox())
     frame.set_object("Title", widgets.HTML())
     frame.set_object("widget", widgets.Tab())
 
@@ -319,9 +329,9 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
     frame.set_object("directory_list", widgets.Select())
 
     frame.set_object("select_nugrid_mesa", widgets.Dropdown())
-    frame.set_object("contain_module_load", widgets.HBox())
+    frame.set_object("contain_module_load", widgets.VBox())
     frame.set_object("select_module", widgets.Dropdown())
-    frame.set_object("contain_model_select", widgets.HBox())
+    frame.set_object("contain_model_select", widgets.VBox())
     frame.set_object("model_select", widgets.Text())
     frame.set_object("load_data", widgets.Button())
 
@@ -490,8 +500,9 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
         frame.set_state(value)
 
     def make_plot(widget):
-        clear_output()
+        clear_output(wait=True)
         pyplot.close("all")
+        display(frame._object_list['window']) #CR
         state = frame.get_state()
     
         data = frame.get_state_data("class_instance")
@@ -649,12 +660,12 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
 
     frame.set_object("stable", widgets.Checkbox())
 
-    frame.set_object("abu_settings", widgets.HBox())
+    frame.set_object("abu_settings", widgets.VBox())
     frame.set_object("ilabel", widgets.Checkbox())
     frame.set_object("imlabel", widgets.Checkbox())
     frame.set_object("imagic", widgets.Checkbox())
 
-    frame.set_object("kipp_settings", widgets.HBox())
+    frame.set_object("kipp_settings", widgets.VBox())
     frame.set_object("plot_star_mass", widgets.Checkbox())
     frame.set_object("plot_c12border", widgets.Checkbox())
     frame.set_object("plot_engminus", widgets.Checkbox())
