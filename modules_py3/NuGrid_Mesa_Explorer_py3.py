@@ -5,8 +5,8 @@ from builtins import str
 from past.builtins import basestring
 from past.utils import old_div
 import threading
-import widget_framework as framework
-from widget_utils import int_text, token_text
+import widget_framework_py3 as framework
+from widget_utils_py3 import int_text, token_text
 import ipywidgets as widgets
 from IPython.display import display, clear_output
 from matplotlib import pyplot
