@@ -143,7 +143,7 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
 
 
     ###DEFAULT###
-
+    
     frame.set_state_data("class_instance", None)
 
     frame.set_state_attribute('window', visibility='visible', **group_style)
@@ -151,15 +151,15 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
     frame.set_state_attribute('widget', visibility='visible', **group_style)
 
     frame.set_state_attribute("page_data", visibility='visible', **first_tab_style)
-    frame.set_state_attribute('mass', visible=not manual_data_select, description="Mass: ", options=["1.0", "1.65", "2.0", "3.0", "4.0", "5.0", "6.0", "7.0", "12.0", "15.0", "20.0", "25.0", "32.0", "60.0"], selected_label="2.0")
-    frame.set_state_attribute('Z', visible=not manual_data_select, description="Z: ", options=["1E-4", "1E-3", "6E-3", "1E-2", "2E-2"])
-    frame.set_state_attribute("address_bar", visible=manual_data_select)
-    frame.set_state_attribute("directory_list", visible=manual_data_select)
+    frame.set_state_attribute('mass', visibility='visible', manual_data_select = True, description="Mass: ", options=["1.0", "1.65", "2.0", "3.0", "4.0", "5.0", "6.0", "7.0", "12.0", "15.0", "20.0", "25.0", "32.0", "60.0"], selected_label="2.0")
+    frame.set_state_attribute('Z',  visibility='visible', manual_data_select = True, description="Z: ", options=["1E-4", "1E-3", "6E-3", "1E-2", "2E-2"])
+    frame.set_state_attribute("address_bar", visibility='visible', manual_data_select = True)
+    frame.set_state_attribute("directory_list", visibility='visible', manual_data_select = True)
     frame.set_state_attribute("select_nugrid_mesa", visibility='visible', description="Select NuGrid or Mesa: ", options=["", "NuGrid", "Mesa"])
     frame.set_state_attribute("contain_module_load", visibility='visible', **group_style)
     frame.set_state_attribute("select_module", visibility='visible', description="Select data type: ", disabled=True)
     
-    frame.set_state_attribute("contain_model_select")# border_style="none", padding="0px", margin="0px", width="18em")
+    frame.set_state_attribute("contain_model_select", visibility= 'hidden')
     frame.set_state_attribute("model_select", visibility='visible', description="Select model: ", placeholder="1", **text_box_style)
 
     frame.set_state_attribute("load_data", visibility='visible', description="Load Data", disabled=True, **button_style)
@@ -177,7 +177,7 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
         frame.set_attributes("model_select", value=int_text(value))
 
     def mass_Z_handler(name, value):
-        if frame.get_attribute("contain_model_select", "visible"):
+            #if frame.get_attribute("contain_model_select", "visibility"):
             mass = float(frame.get_attribute("mass", "value"))
             Z = float(frame.get_attribute("Z", "value"))
             dir = frame.get_attribute("address_bar", "value")
