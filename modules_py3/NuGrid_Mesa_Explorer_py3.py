@@ -14,7 +14,12 @@ import nugridpy.nugridse as mp
 import nugridpy.mesa as ms
 import os
 
-def start_explorer(global_namespace, manual_data_select=False, dir="./"):
+def start_explorer(global_namespace, manual_data_select= 'hidden', dir="./"):
+    if manual_data_select == 'visible':
+        not_manual_data_select = 'hidden'
+    else:
+        not_manual_data_select = 'visible'
+        
     frame = framework.framework()
     #frame.set_default_display_style(padding="0.25em",background_color="white", border_color="LightGrey", border_radius="0.5em")
     #frame.set_default_io_style(padding="0.25em", margin="0.25em", border_color="LightGrey", border_radius="0.5em")
@@ -34,7 +39,7 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
 
     frame.add_state(states_nugrid)
     frame.add_state(states_mesa)
-    if manual_data_select:
+    if manual_data_select == 'visible':
         frame.set_state_data("model_data", (None, None))
     else:
         frame.set_state_data("model_data", (None, None, None))
@@ -151,16 +156,16 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
     frame.set_state_attribute('widget', visibility='visible', **group_style)
 
     frame.set_state_attribute("page_data", visibility='visible', **first_tab_style)
-    frame.set_state_attribute('mass', visibility='visible', manual_data_select = True, description="Mass: ", options=["1.0", "1.65", "2.0", "3.0", "4.0", "5.0", "6.0", "7.0", "12.0", "15.0", "20.0", "25.0", "32.0", "60.0"], selected_label="2.0")
-    frame.set_state_attribute('Z',  visibility='visible', manual_data_select = True, description="Z: ", options=["1E-4", "1E-3", "6E-3", "1E-2", "2E-2"])
-    frame.set_state_attribute("address_bar", visibility='visible', manual_data_select = True)
-    frame.set_state_attribute("directory_list", visibility='visible', manual_data_select = True)
+    frame.set_state_attribute('mass', visibility= not_manual_data_select, description="Mass: ", options=["1.0", "1.65", "2.0", "3.0", "4.0", "5.0", "6.0", "7.0", "12.0", "15.0", "20.0", "25.0", "32.0", "60.0"], selected_label="2.0")
+    frame.set_state_attribute('Z',  visibility= not_manual_data_select, description="Z: ", options=["1E-4", "1E-3", "6E-3", "1E-2", "2E-2"])
+    frame.set_state_attribute("address_bar", visibility= manual_data_select)
+    frame.set_state_attribute("directory_list", visibility= manual_data_select)
     frame.set_state_attribute("select_nugrid_mesa", visibility='visible', description="Select NuGrid or Mesa: ", options=["", "NuGrid", "Mesa"])
     frame.set_state_attribute("contain_module_load", visibility='visible', **group_style)
     frame.set_state_attribute("select_module", visibility='visible', description="Select data type: ", disabled=True)
     
     frame.set_state_attribute("contain_model_select", visibility= 'hidden')
-    frame.set_state_attribute("model_select", visibility='visible', description="Select model: ", placeholder="1", **text_box_style)
+    frame.set_state_attribute("model_select", visibility='hidden', description="Select model: ", placeholder="1", **text_box_style)
 
     frame.set_state_attribute("load_data", visibility='visible', description="Load Data", disabled=True, **button_style)
 
@@ -181,7 +186,7 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
             mass = float(frame.get_attribute("mass", "value"))
             Z = float(frame.get_attribute("Z", "value"))
             dir = frame.get_attribute("address_bar", "value")
-            if manual_data_select:
+            if manual_data_select == 'visible':
                 mdir, mmodel = frame.get_state_data("model_data")
                 if (mdir != dir) or (mmodel == None):
                     clear_output(wait=True)
@@ -241,7 +246,7 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
             model = 1
         module = frame.get_attribute("select_module", "value")
         if module == "H5 out":
-            if manual_data_select:
+            if manual_data_select == 'visible':
                 data = mp.se(dir)
             else:
                 data = mp.se(mass=mass, Z=Z)
@@ -250,7 +255,7 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
             frame.set_attributes("xaxis", options=properties+data.se.isotopes)
             frame.set_attributes("yaxis", options=properties+data.se.isotopes)
         elif module == "History":
-            if manual_data_select:
+            if manual_data_select == 'visible':
                 data = ms.history_data(dir)
             else:
                 data = ms.history_data(mass=mass, Z=Z)
@@ -258,7 +263,7 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
             frame.set_attributes("xaxis", options=sorted(data.cols.keys()))
             frame.set_attributes("yaxis", options=sorted(data.cols.keys()))
         elif module == "Profile":
-            if manual_data_select:
+            if manual_data_select == 'visible':
                 data = ms.mesa_profile(dir, num=model)
             else:
                 data = ms.mesa_profile(mass=mass, Z=Z, num=model)
@@ -288,7 +293,7 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
             mass = float(frame.get_attribute("mass", "value"))
             Z = float(frame.get_attribute("Z", "value"))
             dir = frame.get_attribute("address_bar", "value")
-            if manual_data_select:
+            if manual_data_select == 'visible':
                 mdir, mmodel = frame.get_state_data("model_data")
                 if (mdir != dir) or (mmodel == None):
                     clear_output(wait=True)
@@ -388,8 +393,8 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
     frame.set_state_attribute("mass_range", ["iso_abund", "abu_chart"]+states_movie[1:], description="Mass range: ")
     frame.set_state_attribute("lbound", "abu_chart", visibility='visible', description="lbound", min=-12, max=0, step=0.05, value=(-12, 0))
 
-    frame.set_state_links("amass_link", [("set_amass", "value"), ("amass_range", "visible")], ["iso_abund", "movie_iso_abund"], True)
-    frame.set_state_links("mass_link", [("set_mass", "value"), ("mass_range", "visible")], ["iso_abund", "abu_chart"]+states_movie[1:], True)
+    frame.set_state_links("amass_link", [("set_amass", "value"), ("amass_range", "visibility")], ["iso_abund", "movie_iso_abund"], directional = True)
+    frame.set_state_links("mass_link", [("set_mass", "value"), ("mass_range", "visibility")], ["iso_abund", "abu_chart"]+states_movie[1:], directional = True)
 
     frame.set_state_attribute("lim_settings" , ["iso_abund", "abu_chart", "kip_cont", "tcrhoc"]+states_movie[1:], visibility='visible', **group_style)
     frame.set_state_attribute("set_lims", ["iso_abund", "abu_chart", "kip_cont", "tcrhoc"]+states_movie[1:], visibility='visible', description="Set axis limits: ")
@@ -402,14 +407,14 @@ def start_explorer(global_namespace, manual_data_select=False, dir="./"):
     frame.set_state_attribute("ylim", "tcrhoc", min=8.0, max=10.0, value=(8.0, 10.0), step=0.5)
     frame.set_state_attribute("ixaxis", "kip_cont", visibility='visible', description="X axis format: ", options={"Log time":"log_time_left", "Age":"age", "Model number":"model_number"}, value="model_number")
 
-    frame.set_state_links("xlims_link", [("set_lims", "value"), ("xlim", "visible")], ["abu_chart", "movie_abu_chart", "kip_cont", "tcrhoc"], True)
-    frame.set_state_links("ylims_link", [("set_lims", "value"), ("ylim", "visible")], ["iso_abund", "abu_chart", "kip_cont", "tcrhoc"]+states_movie[1:], True)
+    frame.set_state_links("xlims_link", [("set_lims", "value"), ("xlim", "visibility")], ["abu_chart", "movie_abu_chart", "kip_cont", "tcrhoc"], directional = True)
+    frame.set_state_links("ylims_link", [("set_lims", "value"), ("ylim", "visibility")], ["iso_abund", "abu_chart", "kip_cont", "tcrhoc"]+states_movie[1:], directional= True)
 
     frame.set_state_attribute("xres", "kip_cont", visibility='visible', description="x resolution: ", placeholder="1000", **text_box_style)
     frame.set_state_attribute("yres", "kip_cont", visibility='visible', description="y resolution: ", placeholder="1000", **text_box_style)
 
-    frame.set_state_links("xres_link", [("set_lims", "value"), ("xres", "visible")], "kip_cont", True)
-    frame.set_state_links("yres_link", [("set_lims", "value"), ("yres", "visible")], "kip_cont", True) 
+    frame.set_state_links("xres_link", [("set_lims", "value"), ("xres", "visibility")], "kip_cont", directional =True)
+    frame.set_state_links("yres_link", [("set_lims", "value"), ("yres", "visibility")], "kip_cont", directional = True) 
 
     frame.set_state_attribute("abu_settings", ["abu_chart", "movie_abu_chart"], visibility='visible', **group_style)
     frame.set_state_attribute("ilabel", ["abu_chart", "movie_abu_chart"], visibility='visible', description="Element label")
