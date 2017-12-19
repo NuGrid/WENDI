@@ -393,8 +393,8 @@ def start_explorer(global_namespace, manual_data_select= 'hidden', dir="./"):
     frame.set_state_attribute("mass_range", ["iso_abund", "abu_chart"]+states_movie[1:], description="Mass range: ")
     frame.set_state_attribute("lbound", "abu_chart", visibility='visible', description="lbound", min=-12, max=0, step=0.05, value=(-12, 0))
 
-    frame.set_state_links("amass_link", [("set_amass", "value"), ("amass_range", "visibility")], ["iso_abund", "movie_iso_abund"], directional = True)
-    frame.set_state_links("mass_link", [("set_mass", "value"), ("mass_range", "visibility")], ["iso_abund", "abu_chart"]+states_movie[1:], directional = True)
+    frame.set_state_links("amass_link", [("set_amass", "visibility"), ("amass_range", "visibility")], ["iso_abund", "movie_iso_abund"], directional = True)
+    frame.set_state_links("mass_link", [("set_mass", "visibility"), ("mass_range", "visibility")], ["iso_abund", "abu_chart"]+states_movie[1:], directional = True)
 
     frame.set_state_attribute("lim_settings" , ["iso_abund", "abu_chart", "kip_cont", "tcrhoc"]+states_movie[1:], visibility='visible', **group_style)
     frame.set_state_attribute("set_lims", ["iso_abund", "abu_chart", "kip_cont", "tcrhoc"]+states_movie[1:], visibility='visible', description="Set axis limits: ")
@@ -407,14 +407,14 @@ def start_explorer(global_namespace, manual_data_select= 'hidden', dir="./"):
     frame.set_state_attribute("ylim", "tcrhoc", min=8.0, max=10.0, value=(8.0, 10.0), step=0.5)
     frame.set_state_attribute("ixaxis", "kip_cont", visibility='visible', description="X axis format: ", options={"Log time":"log_time_left", "Age":"age", "Model number":"model_number"}, value="model_number")
 
-    frame.set_state_links("xlims_link", [("set_lims", "value"), ("xlim", "visibility")], ["abu_chart", "movie_abu_chart", "kip_cont", "tcrhoc"], directional = True)
-    frame.set_state_links("ylims_link", [("set_lims", "value"), ("ylim", "visibility")], ["iso_abund", "abu_chart", "kip_cont", "tcrhoc"]+states_movie[1:], directional= True)
+    frame.set_state_links("xlims_link", [("set_lims", "visibility"), ("xlim", "visibility")], ["abu_chart", "movie_abu_chart", "kip_cont", "tcrhoc"], directional = True)
+    frame.set_state_links("ylims_link", [("set_lims", "visibility"), ("ylim", "visibility")], ["iso_abund", "abu_chart", "kip_cont", "tcrhoc"]+states_movie[1:], directional= True)
 
     frame.set_state_attribute("xres", "kip_cont", visibility='visible', description="x resolution: ", placeholder="1000", **text_box_style)
     frame.set_state_attribute("yres", "kip_cont", visibility='visible', description="y resolution: ", placeholder="1000", **text_box_style)
 
-    frame.set_state_links("xres_link", [("set_lims", "value"), ("xres", "visibility")], "kip_cont", directional =True)
-    frame.set_state_links("yres_link", [("set_lims", "value"), ("yres", "visibility")], "kip_cont", directional = True) 
+    frame.set_state_links("xres_link", [("set_lims", "visibility"), ("xres", "visibility")], "kip_cont", directional =True)
+    frame.set_state_links("yres_link", [("set_lims", "visibility"), ("yres", "visibility")], "kip_cont", directional = True) 
 
     frame.set_state_attribute("abu_settings", ["abu_chart", "movie_abu_chart"], visibility='visible', **group_style)
     frame.set_state_attribute("ilabel", ["abu_chart", "movie_abu_chart"], visibility='visible', description="Element label")
