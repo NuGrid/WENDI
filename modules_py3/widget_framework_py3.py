@@ -68,11 +68,15 @@ class framework(object):
             attributes.update(default_attributes)
             attributes.update(state_attributes)
             
+                
             if not "visibility" in attributes:
-                attributes["display"] = 'none' #CR
+                attributes["display"] = 'none' #JO
                 
             if "visibility" in attributes:
                 attributes["display"] = 'flex' #JO
+                
+                if attributes["visibility"] == 'hidden':
+                    attributes["display"] = 'none' #JO
 
             self.set_attributes(obj_name, **attributes)
 
