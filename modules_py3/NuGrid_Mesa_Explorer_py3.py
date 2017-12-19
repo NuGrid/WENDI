@@ -283,7 +283,7 @@ def start_explorer(global_namespace, manual_data_select= 'hidden', dir="./"):
         
     def change_module(widget, value):
         if value == "History":
-            frame.set_state_attribute("select_plot", states_mesa[1:], options={"":"mesa_w_data", "HR-Diagram":"hrd", "Plot":"plot", "Kippenhahn":"kippenhahn", "Kippenhahan contour":"kip_cont", "TCRhoC plot":"tcrhoc", "Get data":"get_data"})
+            frame.set_state_attribute("select_plot", states_mesa[1:], options={"":"mesa_w_data", "HR-Diagram":"hrd", "Plot":"plot", "Kippenhahn":"kippenhahn", "Kippenhahn contour":"kip_cont", "TCRhoC plot":"tcrhoc", "Get data":"get_data"})
             frame.set_state_attribute("contain_model_select", states_mesa, visibility='hidden')
             frame.set_attributes("contain_model_select", visibility='hidden')
         elif value == "Profile":
@@ -378,13 +378,13 @@ def start_explorer(global_namespace, manual_data_select= 'hidden', dir="./"):
     frame.set_state_attribute('sparsity', states_movie[1:], visibility='visible', description="Sparsity: ", value="1", **text_box_style)
 
     frame.set_state_attribute('xax', ["plot", "nugrid_plot", "get_data", "nugrid_get_data"], visibility='visible', **group_style)
-    frame.set_state_attribute('xaxis', visibility='visible', description="select X-axis: ")
+    frame.set_state_attribute('xaxis',["plot", "nugrid_plot"], visibility='visible', description="select X-axis: ")
     frame.set_state_attribute('xaxis', ["get_data", "nugrid_get_data"], description="select data: ")
-    frame.set_state_attribute('logx', visibility='visible', description="log X-axis: ")
+    frame.set_state_attribute('logx',["plot", "nugrid_plot"], visibility='visible', description="log X-axis: ")
     frame.set_state_attribute('logx', ["get_data", "nugrid_get_data"], visibility='hidden')
     frame.set_state_attribute('yax', ["plot", "nugrid_plot"], visibility='visible', **group_style)
-    frame.set_state_attribute('yaxis', visibility='visible', description="select Y-axis: ")
-    frame.set_state_attribute('logy', visibility='visible', description="log Y-axis: ")
+    frame.set_state_attribute('yaxis',["plot", "nugrid_plot"], visibility='visible', description="select Y-axis: ")
+    frame.set_state_attribute('logy',["plot", "nugrid_plot"], visibility='visible', description="log Y-axis: ")
 
     frame.set_state_attribute("mass_settings", ["iso_abund", "abu_chart"]+states_movie[1:], visibility='visible', **group_style)
     frame.set_state_attribute("set_amass", ["iso_abund", "movie_iso_abund"], visibility='visible', description="Set atomic mass: ")
@@ -589,13 +589,13 @@ def start_explorer(global_namespace, manual_data_select= 'hidden', dir="./"):
         elif state=="kippenhahn":
             data.kippenhahn(0, "model", plot_star_mass=plot_star_mass, c12_bm=plot_c12border)
         elif state=="kip_cont":
-            xlims=[xlim[0], xlim[1]]
+            xlims=[int(xlim[0]), int(xlim[1])]
             ylims=[ylim[0], ylim[1]]
             if (xlims == [0,0]) and (ylims == [0,0]):
                 xlim = frame.get_attribute("xlim", "value")
                 ylim = frame.get_attribute("ylim", "value")
-                xlims=[xlim[0], xlim[1]]
-                ylims=[ylim[0], ylim[1]]
+                xlims=[int(xlim[0]), int(xlim[1])]
+                ylims=[int(ylim[0]), int(ylim[1])]
             data.kip_cont(modstart=xlims[0], modstop=xlims[1], ylims=ylims, xres=xres, yres=yres, engenPlus=plot_engplus, engenMinus=plot_engminus, c12_boundary=plot_c12border, ixaxis = ixaxis)
         elif state=="tcrhoc":
             lims=[xlim[0], xlim[1], ylim[0], ylim[1]]
