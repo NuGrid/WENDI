@@ -29,6 +29,7 @@ def start_explorer(global_namespace, manual_data_select= 'hidden', dir="./"):
     #group_style = {"border_style":"none", "border_radius":"0em", "width":"100%"}
     group_style = {"border":"0em none","margin":" 0em 0em 0em 0em"}
     text_box_style = {"width":"10em"}
+    slider_style = {'description_width': 'initial'}
     button_style = {"font_size":"1.25em", "font_weight":"bold"}
     first_tab_style = {"margin":"0em 0.5em 0.5em 0.5em"}
 
@@ -39,6 +40,7 @@ def start_explorer(global_namespace, manual_data_select= 'hidden', dir="./"):
 
     frame.add_state(states_nugrid)
     frame.add_state(states_mesa)
+    
     if manual_data_select == 'visible':
         frame.set_state_data("model_data", (None, None))
     else:
@@ -388,9 +390,9 @@ def start_explorer(global_namespace, manual_data_select= 'hidden', dir="./"):
 
     frame.set_state_attribute("mass_settings", ["iso_abund", "abu_chart"]+states_movie[1:], visibility='visible', **group_style)
     frame.set_state_attribute("set_amass", ["iso_abund", "movie_iso_abund"], visibility='visible', description="Set atomic mass: ")
-    frame.set_state_attribute("amass_range", ["iso_abund", "movie_iso_abund"], description="Atomi mass range: ", min=0, max=211, value=(0, 211))
+    frame.set_state_attribute("amass_range", ["iso_abund", "movie_iso_abund"],description="Atomic mass range: ", min=0, max=211, value=(0, 211),**slider_style)
     frame.set_state_attribute("set_mass", ["iso_abund", "abu_chart"]+states_movie[1:], visibility='visible', description="Set mass: ")
-    frame.set_state_attribute("mass_range", ["iso_abund", "abu_chart"]+states_movie[1:], description="Mass range: ")
+    frame.set_state_attribute("mass_range", ["iso_abund", "abu_chart"]+states_movie[1:], description="Mass range: ",**slider_style)
     frame.set_state_attribute("lbound", "abu_chart", visibility='visible', description="lbound", min=-12, max=0, step=0.05, value=(-12, 0))
 
     frame.set_state_links("amass_link", [("set_amass", "visibility"), ("amass_range", "visibility")], ["iso_abund", "movie_iso_abund"], directional = True)
@@ -398,9 +400,9 @@ def start_explorer(global_namespace, manual_data_select= 'hidden', dir="./"):
 
     frame.set_state_attribute("lim_settings" , ["iso_abund", "abu_chart", "kip_cont", "tcrhoc"]+states_movie[1:], visibility='visible', **group_style)
     frame.set_state_attribute("set_lims", ["iso_abund", "abu_chart", "kip_cont", "tcrhoc"]+states_movie[1:], visibility='visible', description="Set axis limits: ")
-    frame.set_state_attribute("xlim", ["abu_chart", "movie_abu_chart", "kip_cont"], description="x-axis limits: ", min=0, max=130, value=(0, 130), step=0.5)
-    frame.set_state_attribute("xlim", "tcrhoc", description="x-axis limits: ", min=3.0, max=10.0, value=(3.0, 10.0), step=0.5)
-    frame.set_state_attribute("ylim", ["iso_abund", "abu_chart", "kip_cont", "tcrhoc"]+states_movie[1:], description="y-axis limits: ")
+    frame.set_state_attribute("xlim", ["abu_chart", "movie_abu_chart", "kip_cont"], min=0, max=130, value=(0, 130), description="x-axis limits: ",step=0.5,**slider_style)
+    frame.set_state_attribute("xlim", "tcrhoc", description="x-axis limits: ", min=3.0, max=10.0, value=(3.0, 10.0), step=0.5,**slider_style)
+    frame.set_state_attribute("ylim", ["iso_abund", "abu_chart", "kip_cont", "tcrhoc"]+states_movie[1:], description="y-axis limits: ",**slider_style)
     frame.set_state_attribute("ylim", ["iso_abund", "movie_iso_abund"], min=-13, max=0, step=0.05, value=(-13, 0))
     frame.set_state_attribute("ylim", ["abu_chart", "movie_abu_chart"], min=0, max=130, value=(0, 130), step=0.5)
     frame.set_state_attribute("ylim", "kip_cont", min=0, max=1, value=(0, 1), step=0.005)#mass
@@ -470,7 +472,7 @@ def start_explorer(global_namespace, manual_data_select= 'hidden', dir="./"):
             mass_list = data.se.get(min, "mass")
             mass_min, mass_max = mass_list[0], mass_list[-1]
             mass_step = old_div((mass_max - mass_min),200.0)
-            frame.set_state_attribute("mass_range", ["iso_abund", "abu_chart"], min=mass_min, max=mass_max, value=(mass_min, mass_max), step=mass_step)
+            frame.set_state_attribute("mass_range", ["iso_abund", "abu_chart"],visibility = 'visible', min=mass_min, max=mass_max, value=(mass_min, mass_max), step=mass_step)
         
             frame.set_state_attribute('cycle', ["iso_abund", "abu_chart"], min=min, max=max, step=step)
     

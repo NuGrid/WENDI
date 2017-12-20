@@ -67,17 +67,29 @@ class framework(object):
             attributes = default_style.copy()
             attributes.update(default_attributes)
             attributes.update(state_attributes)
-            
-                
+
+            '''
+            if not "visibility" in attributes:
+                attributes["visibility"] = 'hidden' #JO            
+            '''   
             if not "visibility" in attributes:
                 attributes["display"] = 'none' #JO
                 
             if "visibility" in attributes:
                 attributes["display"] = 'flex' #JO
                 
+                if attributes["visibility"] == 'inherit':
+                    attributes["display"] = 'flex' #JO
+                
                 if attributes["visibility"] == 'hidden':
                     attributes["display"] = 'none' #JO
-
+                    
+            if obj_name == 'amass_range' or obj_name == 'mass_range' or obj_name == 'xlim' or obj_name == 'ylim':
+                if obj_name == 'xlim':
+                    attributes['description'] = "x-axis limits: "
+                    
+                attributes["display"] = 'flex' #JO
+                
             self.set_attributes(obj_name, **attributes)
 
         ##apply links
