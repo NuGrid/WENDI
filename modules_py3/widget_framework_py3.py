@@ -87,8 +87,11 @@ class framework(object):
             if obj_name == 'amass_range' or obj_name == 'mass_range' or obj_name == 'xlim' or obj_name == 'ylim':
                 if obj_name == 'xlim':
                     attributes['description'] = "x-axis limits: "
-                    
-                attributes["display"] = 'flex' #JO
+                    attributes["display"] = 'flex' #JO
+                    if state == 'iso_abund':
+                        attributes["display"] = 'none' #JO
+                else:    
+                    attributes["display"] = 'flex' #JO
                 
             self.set_attributes(obj_name, **attributes)
 
