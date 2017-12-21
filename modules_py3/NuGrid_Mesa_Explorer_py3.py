@@ -381,7 +381,7 @@ def start_explorer(global_namespace, manual_data_select= 'hidden', dir="./"):
 
     frame.set_state_attribute('xax', ["plot", "nugrid_plot", "get_data", "nugrid_get_data"], visibility='visible', **group_style)
     frame.set_state_attribute('xaxis',["plot", "nugrid_plot"], visibility='visible', description="select X-axis: ")
-    frame.set_state_attribute('xaxis', ["get_data", "nugrid_get_data"], description="select data: ")
+    frame.set_state_attribute('xaxis', ["get_data", "nugrid_get_data"],visibility='visible', description="select data: ")
     frame.set_state_attribute('logx',["plot", "nugrid_plot"], visibility='visible', description="log X-axis: ")
     frame.set_state_attribute('logx', ["get_data", "nugrid_get_data"], visibility='hidden')
     frame.set_state_attribute('yax', ["plot", "nugrid_plot"], visibility='visible', **group_style)

@@ -72,6 +72,7 @@ class framework(object):
             if not "visibility" in attributes:
                 attributes["visibility"] = 'hidden' #JO            
             '''   
+            ## Hacky bits that shouldn't be here sorry
             if not "visibility" in attributes:
                 attributes["display"] = 'none' #JO
                 
@@ -89,6 +90,9 @@ class framework(object):
                     attributes['description'] = "x-axis limits: "
                     attributes["display"] = 'flex' #JO
                     if state == 'iso_abund':
+                        attributes["display"] = 'none' #JO
+                elif obj_name == 'amass_range':
+                    if state == 'abu_chart':
                         attributes["display"] = 'none' #JO
                 else:    
                     attributes["display"] = 'flex' #JO
